@@ -2,9 +2,8 @@
 
 Small package, short rules.
 
-Building it needs Node 20 or newer — vitest reaches for `node:util`'s
-`styleText`. Using it needs nothing of the sort: the published output is
-browser ESM and touches no Node API.
+Building it needs Node 22 or newer. Using it needs nothing of the sort: the
+published output is browser ESM and touches no Node API at all.
 
 ```sh
 npm install
@@ -19,7 +18,7 @@ npx serve .        # then open /demo/
 ```
 
 CI runs `lint`, `format:check`, `typecheck`, `test`, `build` and the manifest
-check on Node 20, 22 and 24, plus the browser suite once on Chromium. Running
+check on Node 22 and 24, plus the browser suite once on Chromium. Running
 the same locally is the whole pre-flight.
 
 **After adding or updating a dependency, run `npm run lock`, then check it

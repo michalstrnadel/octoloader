@@ -92,7 +92,7 @@ Behaviour follows [Primer's loading pattern][primer].
   apart. The React entry is exercised in a real document as well as on the
   server, so the delay's timer and its cleanup are covered.
 - ESLint with type-aware rules and Prettier, both enforced in CI across Node
-  20, 22 and 24, plus a Chromium suite that asserts the engine actually accepted
+  22 and 24, plus a Chromium suite that asserts the engine actually accepted
   the stylesheet — happy-dom parses CSS as text, so a bad keyframe passes every
   unit test and ships a still octopus.
 - Snapshot tests that render the sprite as characters, so a pull request that

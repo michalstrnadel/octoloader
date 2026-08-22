@@ -20,9 +20,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The toolchain needs 20+ — vitest reaches for node:util's styleText.
-        # The published package is browser ESM and touches no Node API at all.
-        node: [20, 22, 24]
+        # 20 is end of life and cannot even install a current npm, which now
+        # wants 22+. The published package is browser ESM and touches no Node
+        # API at all, so this matrix is about the toolchain, not the audience.
+        node: [22, 24]
     steps:
       - uses: actions/checkout@v7
 
@@ -30,10 +31,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-
-      # The lockfile is resolved with a current npm; older ones bundled with a
-      # Node release disagree about optional platform dependencies and reject it.
-      - run: npm install -g npm@latest
 
       - run: npm ci
 
@@ -73,8 +70,6 @@ jobs:
         with:
           node-version: 24
           cache: npm
-
-      - run: npm install -g npm@latest
 
       - run: npm ci
 
