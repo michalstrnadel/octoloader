@@ -48,7 +48,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "cem": "cem analyze",
+    "cem": "npx --yes @custom-elements-manifest/analyzer@0.11.0 analyze",
     "docs": "npm run build && node scripts/export-sprite.mjs && python3 scripts/render-docs.py",
     "dev": "tsup --watch",
     "prepare": "tsup",
@@ -70,7 +70,6 @@
     }
   },
   "devDependencies": {
-    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",

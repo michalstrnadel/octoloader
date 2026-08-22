@@ -14,7 +14,7 @@ npm run lint       # eslint, type-aware
 npm run format     # prettier
 npm run typecheck
 npm run build      # tsup, ESM + .d.ts
-npm run cem        # regenerate custom-elements.json
+npm run cem        # regenerate custom-elements.json (fetched by npx, not installed)
 npx serve .        # then open /demo/
 ```
 
@@ -22,17 +22,24 @@ CI runs `lint`, `format:check`, `typecheck`, `test`, `build` and the manifest
 check on Node 20, 22 and 24, plus the browser suite once on Chromium. Running
 the same locally is the whole pre-flight.
 
-**After adding or updating a dependency, run `npm run lock`.** A plain
-`npm install` on macOS writes a lockfile that omits the transitive dependencies
-of Linux-only optional binaries — `@oxc-resolver`'s wasm fallback is the one
-that bites here — and `npm ci` on the runner then refuses it with
-`Missing: … from lock file`. That script re-resolves with `--os=linux`, which
-produces a lockfile both platforms accept. You can check it without waiting for
-CI:
+**After adding or updating a dependency, run `npm run lock`, then check it
+installs on Linux too:**
 
 ```sh
+npm run lock
 npm ci --dry-run --os=linux --cpu=x64
 ```
+
+A plain `npm install` on macOS writes a lockfile that omits the transitive
+dependencies of optional binaries it cannot install, and `npm ci` on the runner
+then refuses it with `Missing: … from lock file`. `npm run lock` re-resolves
+with `--os=linux`, which usually produces a lockfile both platforms accept.
+
+Usually. The custom-elements analyzer defeated it outright — its resolver ships
+a wasm fallback whose floating peer dependencies never landed in the lock at
+all — so it is fetched by `npx` at a pinned version rather than installed. That
+is why `cem` looks different from every other script here, and it took about
+eighty packages out of the tree on the way.
 
 ## Three layers of test, and what each is for
 
