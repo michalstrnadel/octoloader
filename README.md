@@ -34,8 +34,11 @@ three.
 [primer]: https://primer.style/product/ui-patterns/loading/
 
 ```sh
-npm install octoloader
+npm install github:michalstrnadel/octoloader
 ```
+
+Installing from the repository builds `dist` on the way in, so it works
+before the package has a registry entry.
 
 ## React
 
