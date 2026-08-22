@@ -1,8 +1,11 @@
 import {
+  forwardRef,
+  memo,
   useEffect,
   useId,
   useMemo,
   useState,
+  type ComponentPropsWithoutRef,
   type CSSProperties,
   type ReactNode,
 } from 'react';
@@ -41,7 +44,23 @@ export {
   BAR_STEPS,
 } from './render.js';
 
-export interface OctoLoaderProps {
+/**
+ * Attributes the component works out for itself.
+ *
+ * They are removed from the prop type rather than silently overwritten, so
+ * passing `aria-label` is a type error that points at `announce` instead of a
+ * value that quietly does nothing.
+ */
+type Owned =
+  | 'children'
+  | 'role'
+  | 'aria-label'
+  | 'aria-labelledby'
+  | 'aria-valuenow'
+  | 'aria-valuemin'
+  | 'aria-valuemax';
+
+export interface OctoLoaderProps extends Omit<ComponentPropsWithoutRef<'div'>, Owned> {
   /** `color` is the character as drawn; `mono` follows `currentColor`. */
   variant?: 'color' | 'mono';
   /** Text under the octopus. Pass `null` for the sprite on its own. */
@@ -81,8 +100,6 @@ export interface OctoLoaderProps {
    * and a loader with no label announces as "Loading".
    */
   announce?: string;
-  className?: string;
-  style?: CSSProperties;
 }
 
 const wrapperStyle: CSSProperties = {
@@ -110,124 +127,153 @@ const frameStyle: CSSProperties = {
   borderRadius: 'var(--octo-frame-radius, 6px)',
 };
 
-export function OctoLoader({
-  variant = 'color',
-  label = 'One moment please…',
-  size = 60,
-  speed = 1,
-  delay = 0,
-  progress,
-  bubbles = true,
-  frame = false,
-  announce,
-  className,
-  style,
-}: OctoLoaderProps) {
-  const { strip, overlays, palette } = useMemo(() => {
-    const p = variant === 'mono' ? MONO_PALETTE : COLOR_PALETTE;
-    const patch = (grid: typeof FRAME_BLINK) => toPaths(diff(FRAMES[0], grid), p);
-    return {
-      // Laid out side by side. The strip slides; the viewBox does not.
-      strip: stripPaths(FRAMES, p),
-      overlays: {
-        left: patch(FRAME_LOOK_LEFT),
-        right: patch(FRAME_LOOK_RIGHT),
-        lid: patch(FRAME_BLINK),
-      },
-      palette: p,
-    };
-  }, [variant]);
+/**
+ * A pixel-art octopus that swims while you wait.
+ *
+ * @example
+ * ```tsx
+ * <OctoLoader delay={1000} announce="Loading pull requests" />
+ * <OctoLoader variant="mono" progress={done / total} label={`${done} of ${total}`} />
+ * <OctoLoader frame style={{ maxWidth: 420 }} />
+ * ```
+ */
+export const OctoLoader = memo(
+  forwardRef<HTMLDivElement, OctoLoaderProps>(function OctoLoader(
+    {
+      variant = 'color',
+      label = 'One moment please…',
+      size = 60,
+      speed = 1,
+      delay = 0,
+      progress,
+      bubbles = true,
+      frame = false,
+      announce,
+      className,
+      style,
+      ...rest
+    },
+    ref,
+  ) {
+    const { strip, overlays, palette } = useMemo(() => {
+      const p = variant === 'mono' ? MONO_PALETTE : COLOR_PALETTE;
+      const patch = (grid: typeof FRAME_BLINK) => toPaths(diff(FRAMES[0], grid), p);
+      return {
+        // Laid out side by side. The strip slides; the viewBox does not.
+        strip: stripPaths(FRAMES, p),
+        overlays: {
+          left: patch(FRAME_LOOK_LEFT),
+          right: patch(FRAME_LOOK_RIGHT),
+          lid: patch(FRAME_BLINK),
+        },
+        palette: p,
+      };
+    }, [variant]);
 
-  const [waited, setWaited] = useState(() => !(delay > 0));
-  useEffect(() => {
-    if (!(delay > 0)) {
-      setWaited(true);
-      return;
-    }
-    setWaited(false);
-    const timer = setTimeout(() => setWaited(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
+    const [waited, setWaited] = useState(() => !(delay > 0));
+    useEffect(() => {
+      if (!(delay > 0)) {
+        setWaited(true);
+        return;
+      }
+      setWaited(false);
+      const timer = setTimeout(() => setWaited(true), delay);
+      return () => clearTimeout(timer);
+    }, [delay]);
 
-  const labelId = `${useId()}label`;
-  const hasLabel = label !== null && label !== undefined && label !== '';
-  const determinate = typeof progress === 'number' && Number.isFinite(progress);
-  const percent = determinate ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : undefined;
+    const labelId = `${useId()}label`;
+    const hasLabel = label !== null && label !== undefined && label !== '';
+    const determinate = typeof progress === 'number' && Number.isFinite(progress);
+    const percent = determinate ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : undefined;
 
-  const headroom = bubbles ? BUBBLE_HEADROOM : 0;
-  const viewHeight = VIEW_HEIGHT + headroom + (determinate ? BAR_ROOM : 0);
+    const headroom = bubbles ? BUBBLE_HEADROOM : 0;
+    const viewHeight = VIEW_HEIGHT + headroom + (determinate ? BAR_ROOM : 0);
 
-  if (!waited) return null;
+    if (!waited) return null;
 
-  return (
-    <div
-      // A determinate indicator carries its value instead of announcing once.
-      role={determinate ? 'progressbar' : 'status'}
-      aria-valuenow={percent}
-      aria-valuemin={determinate ? 0 : undefined}
-      aria-valuemax={determinate ? 100 : undefined}
-      // Primer prefers naming the region from the text people can see.
-      aria-labelledby={!announce && hasLabel ? labelId : undefined}
-      aria-label={announce ?? (hasLabel ? undefined : 'Loading')}
-      className={className}
-      style={{
-        ...wrapperStyle,
-        ...(frame ? frameStyle : null),
-        ['--octo-swim' as string]: `${0.9 / speed}s`,
-        ['--octo-blink' as string]: `${4.6 / speed}s`,
-        ['--octo-glance' as string]: `${7.3 / speed}s`,
-        ['--octo-rate' as string]: speed,
-        ...style,
-      }}
-    >
-      <svg
-        width={size}
-        height={Math.round((size * viewHeight) / SPRITE_WIDTH)}
-        viewBox={`0 ${-headroom} ${SPRITE_WIDTH} ${viewHeight}`}
-        shapeRendering="crispEdges"
-        aria-hidden="true"
-        focusable="false"
+    return (
+      <div
+        {...rest}
+        ref={ref}
+        // A determinate indicator carries its value instead of announcing once.
+        role={determinate ? 'progressbar' : 'status'}
+        aria-valuenow={percent}
+        aria-valuemin={determinate ? 0 : undefined}
+        aria-valuemax={determinate ? 100 : undefined}
+        // Primer prefers naming the region from the text people can see.
+        aria-labelledby={!announce && hasLabel ? labelId : undefined}
+        aria-label={announce ?? (hasLabel ? undefined : 'Loading')}
+        className={className}
+        style={{
+          ...wrapperStyle,
+          ...(frame ? frameStyle : null),
+          ['--octo-swim' as string]: `${0.9 / speed}s`,
+          ['--octo-blink' as string]: `${4.6 / speed}s`,
+          ['--octo-glance' as string]: `${7.3 / speed}s`,
+          ['--octo-rate' as string]: speed,
+          ...style,
+        }}
       >
-        <style>{CSS}</style>
-        <g className="octo-body">
-          <g className="octo-bob">
-            <g className="octo-strip">{paths(strip)}</g>
-            {/* The eyelids close over whichever way the eyes are looking. */}
-            <g className="octo-look octo-look-left">{paths(overlays.left)}</g>
-            <g className="octo-look octo-look-right">{paths(overlays.right)}</g>
-            <g className="octo-lid">{paths(overlays.lid)}</g>
+        {/*
+        Outside the <svg> on purpose. SVG styles are document-global anyway, so
+        a copy per instance was pure waste — and React only hoists and
+        de-duplicates a <style> in the HTML namespace. On React 19 a page of
+        loaders shares one; on 17 and 18 it falls back to a copy each, which is
+        what it always did.
+      */}
+        <style href="octoloader" precedence="default">
+          {CSS}
+        </style>
+        <svg
+          width={size}
+          height={Math.round((size * viewHeight) / SPRITE_WIDTH)}
+          viewBox={`0 ${-headroom} ${SPRITE_WIDTH} ${viewHeight}`}
+          shapeRendering="crispEdges"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <g className="octo-body">
+            <g className="octo-bob">
+              <g className="octo-strip">{paths(strip)}</g>
+              {/* The eyelids close over whichever way the eyes are looking. */}
+              <g className="octo-look octo-look-left">{paths(overlays.left)}</g>
+              <g className="octo-look octo-look-right">{paths(overlays.right)}</g>
+              <g className="octo-lid">{paths(overlays.lid)}</g>
+            </g>
+            {bubbles
+              ? BUBBLES.map((b, i) => (
+                  <rect
+                    key={i}
+                    className={`octo-bubble octo-bubble-${i}`}
+                    x={b.x}
+                    y={b.y}
+                    width={b.size}
+                    height={b.size}
+                    fill={palette.B ?? 'currentColor'}
+                  />
+                ))
+              : null}
           </g>
-          {bubbles
-            ? BUBBLES.map((b, i) => (
-                <rect
-                  key={i}
-                  className={`octo-bubble octo-bubble-${i}`}
-                  x={b.x}
-                  y={b.y}
-                  width={b.size}
-                  height={b.size}
-                  fill={palette.B ?? 'currentColor'}
-                />
-              ))
-            : null}
-        </g>
-        {/* Outside octo-body, so the reduced-motion pulse leaves it alone. */}
-        {determinate ? (
-          <g className="octo-bar">
-            {progressBar(progress, palette).map((r, i) => (
-              <rect key={i} x={r.x} y={r.y} width={r.width} height={r.height} fill={r.fill} />
-            ))}
-          </g>
+          {/* Outside octo-body, so the reduced-motion pulse leaves it alone. */}
+          {determinate ? (
+            <g className="octo-bar">
+              {progressBar(progress, palette).map((r, i) => (
+                <rect key={i} x={r.x} y={r.y} width={r.width} height={r.height} fill={r.fill} />
+              ))}
+            </g>
+          ) : null}
+        </svg>
+        {hasLabel ? (
+          <span id={labelId} aria-hidden="true">
+            {label}
+          </span>
         ) : null}
-      </svg>
-      {hasLabel ? (
-        <span id={labelId} aria-hidden="true">
-          {label}
-        </span>
-      ) : null}
-    </div>
-  );
-}
+      </div>
+    );
+  }),
+);
+
+OctoLoader.displayName = 'OctoLoader';
 
 function paths(specs: PathSpec[]) {
   return specs.map((p) => <path key={p.fill} fill={p.fill} d={p.d} />);

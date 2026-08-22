@@ -128,7 +128,13 @@ export function progressBar(progress: number, palette: Palette): RectSpec[] {
   const filled = Math.round(clamped * BAR_STEPS);
 
   const rects: RectSpec[] = [
-    { x: 0, y: BAR_TOP, width: SPRITE_WIDTH, height: BAR_HEIGHT, fill: palette.o ?? 'currentColor' },
+    {
+      x: 0,
+      y: BAR_TOP,
+      width: SPRITE_WIDTH,
+      height: BAR_HEIGHT,
+      fill: palette.o ?? 'currentColor',
+    },
     { x: 1, y: BAR_TOP + 1, width: BAR_STEPS, height: 1, fill: palette.T ?? 'transparent' },
   ];
   if (filled > 0) {
@@ -224,10 +230,10 @@ function bubbleCss(bubbles: readonly Bubble[] = BUBBLES): string {
   return bubbles
     .map(
       (b, i) =>
-        `.octo-bubble-${i}{animation:octo-bubble-${i} calc(${b.period}s / var(--octo-rate,1))`
-        + ` steps(${b.rise}) calc(${b.delay}s / var(--octo-rate,1)) infinite}`
-        + `@keyframes octo-bubble-${i}{from{opacity:.85;transform:translateY(0)}`
-        + `to{opacity:0;transform:translateY(-${b.rise}px)}}`,
+        `.octo-bubble-${i}{animation:octo-bubble-${i} calc(${b.period}s / var(--octo-rate,1))` +
+        ` steps(${b.rise}) calc(${b.delay}s / var(--octo-rate,1)) infinite}` +
+        `@keyframes octo-bubble-${i}{from{opacity:.85;transform:translateY(0)}` +
+        `to{opacity:0;transform:translateY(-${b.rise}px)}}`,
     )
     .join('');
 }

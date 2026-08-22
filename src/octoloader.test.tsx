@@ -1,4 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, render, screen } from '@testing-library/react';
+import { createRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import {
@@ -81,11 +83,20 @@ describe('sprite', () => {
       queue.push([y, x]);
     };
 
-    for (let y = 0; y < SPRITE_HEIGHT; y++) { push(y, 0); push(y, SPRITE_WIDTH - 1); }
-    for (let x = 0; x < SPRITE_WIDTH; x++) { push(0, x); push(SPRITE_HEIGHT - 1, x); }
+    for (let y = 0; y < SPRITE_HEIGHT; y++) {
+      push(y, 0);
+      push(y, SPRITE_WIDTH - 1);
+    }
+    for (let x = 0; x < SPRITE_WIDTH; x++) {
+      push(0, x);
+      push(SPRITE_HEIGHT - 1, x);
+    }
     while (queue.length) {
       const [y, x] = queue.pop()!;
-      push(y + 1, x); push(y - 1, x); push(y, x + 1); push(y, x - 1);
+      push(y + 1, x);
+      push(y - 1, x);
+      push(y, x + 1);
+      push(y, x - 1);
     }
 
     const sealed: string[] = [];
@@ -145,7 +156,9 @@ describe('sprite', () => {
 
   it('plays the poses out and back', () => {
     const peak = FRAME_POSE.indexOf(Math.max(...FRAME_POSE));
-    expect(FRAME_POSE.slice(0, peak + 1)).toEqual([...FRAME_POSE.slice(0, peak + 1)].sort((a, b) => a - b));
+    expect(FRAME_POSE.slice(0, peak + 1)).toEqual(
+      [...FRAME_POSE.slice(0, peak + 1)].sort((a, b) => a - b),
+    );
     expect(FRAME_POSE.slice(peak)).toEqual([...FRAME_POSE.slice(peak)].sort((a, b) => b - a));
   });
 
@@ -252,7 +265,9 @@ describe('animationCss', () => {
   it('parks the sprite where frame one sits when motion is turned down', () => {
     const css = animationCss();
     expect(css).toContain('prefers-reduced-motion');
-    expect(css).toContain('.octo-strip,.octo-bob,.octo-lid,.octo-look,.octo-bubble{animation:none}');
+    expect(css).toContain(
+      '.octo-strip,.octo-bob,.octo-lid,.octo-look,.octo-bubble{animation:none}',
+    );
     expect(css).toContain(`transform:translateY(${FRAME_LIFT[0]}px)`);
   });
 
@@ -528,5 +543,99 @@ describe('progressBar', () => {
       const [frame, track, fill] = progressBar(0.5, palette);
       expect(new Set([frame.fill, track.fill, fill.fill]).size).toBe(3);
     }
+  });
+});
+
+/**
+ * Everything above renders the React component to a string. That never runs an
+ * effect, so the delay — the one prop with a timer behind it — went untested
+ * until here.
+ */
+describe('<OctoLoader> in a document', () => {
+  // The custom-element block above leaves its hosts in the body, and those
+  // carry role="status" too — so start from an empty page, not just a cleanup.
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+  afterEach(cleanup);
+
+  it('appears only once the delay has run', () => {
+    vi.useFakeTimers();
+    try {
+      render(<OctoLoader delay={1000} />);
+      expect(screen.queryByRole('status')).toBeNull();
+
+      act(() => {
+        vi.advanceTimersByTime(999);
+      });
+      expect(screen.queryByRole('status')).toBeNull();
+
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(screen.getByRole('status')).not.toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('drops the timer when it is unmounted mid-wait', () => {
+    vi.useFakeTimers();
+    try {
+      const { unmount } = render(<OctoLoader delay={1000} />);
+      unmount();
+      // A surviving timer would call setState on a component that is gone.
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+      expect(screen.queryByRole('status')).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('hands back the wrapper through a ref', () => {
+    const ref = createRef<HTMLDivElement>();
+    render(<OctoLoader ref={ref} />);
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+    expect(ref.current?.getAttribute('role')).toBe('status');
+  });
+
+  it('passes anything else it is given straight through', () => {
+    render(<OctoLoader id="pending" data-testid="loader" title="still working" />);
+    const el = screen.getByTestId('loader');
+    expect(el.id).toBe('pending');
+    expect(el.getAttribute('title')).toBe('still working');
+  });
+
+  it('is named by the text on screen', () => {
+    render(<OctoLoader label="Fetching branches…" />);
+    expect(screen.getByRole('status').getAttribute('aria-labelledby')).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toContain('Fetching branches…');
+  });
+
+  it('reports its value as a progressbar', () => {
+    render(<OctoLoader progress={0.42} />);
+    const bar = screen.getByRole('progressbar');
+    expect(bar.getAttribute('aria-valuenow')).toBe('42');
+    expect(bar.getAttribute('aria-valuemin')).toBe('0');
+    expect(bar.getAttribute('aria-valuemax')).toBe('100');
+  });
+
+  /**
+   * The stylesheet used to live inside each `<svg>`, where SVG rules are still
+   * document-global — so a page of loaders carried a copy each for nothing.
+   */
+  it('shares one stylesheet across every loader on the page', () => {
+    render(
+      <>
+        <OctoLoader />
+        <OctoLoader variant="mono" />
+        <OctoLoader progress={0.5} />
+      </>,
+    );
+    const sheets = document.querySelectorAll('style[data-href="octoloader"]');
+    expect(sheets).toHaveLength(1);
+    expect(sheets[0].textContent).toContain('octo-strip');
   });
 });

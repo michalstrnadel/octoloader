@@ -4,7 +4,7 @@
 
 **A pixel-art octopus that swims while you wait.**
 
-[![bundle](https://img.shields.io/badge/gzipped-4.7%20kB-4cc9f0)](#footprint)
+[![bundle](https://img.shields.io/badge/gzipped-4.8%20kB-4cc9f0)](#footprint)
 [![types](https://img.shields.io/badge/types-included-4cc9f0)](#react)
 [![dependencies](https://img.shields.io/badge/dependencies-0-4cc9f0)](package.json)
 [![CI](https://github.com/michalstrnadel/octoloader/actions/workflows/ci.yml/badge.svg)](https://github.com/michalstrnadel/octoloader/actions/workflows/ci.yml)
@@ -53,21 +53,34 @@ import { OctoLoader } from 'octoloader';
 <OctoLoader size={90} speed={1.5} label={null} bubbles={false} />
 ```
 
-| Prop | Type | Default | |
-| --- | --- | --- | --- |
-| `variant` | `'color' \| 'mono'` | `'color'` | `mono` follows `currentColor`, with the eyes and suckers on `--octo-paper` and the pupils on `--octo-pupil` |
-| `label` | `ReactNode` | `'One moment please…'` | `null` renders the sprite on its own |
-| `size` | `number` | `60` | Width in px. The sprite is 30 pixels wide, so multiples of 30 keep every pixel square |
-| `speed` | `number` | `1` | Multiplier on every clock |
-| `delay` | `number` | `0` | Milliseconds to stay invisible. Renders nothing at all until it elapses |
-| `progress` | `number` | — | `0`–`1` turns the loader determinate and draws a bar underneath |
-| `bubbles` | `boolean` | `true` | Bubbles drifting up past the animal's left side. Adds headroom above it |
-| `frame` | `boolean` | `false` | Wraps it in an empty-state panel. Spans its container; give it a `maxWidth` to hold it in |
-| `announce` | `string` | — | Overrides the accessible name. Without it the visible label is the name |
-| `className`, `style` | | | Applied to the wrapper |
+| Prop                                           | Type                | Default                |                                                                                                             |
+| ---------------------------------------------- | ------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `variant`                                      | `'color' \| 'mono'` | `'color'`              | `mono` follows `currentColor`, with the eyes and suckers on `--octo-paper` and the pupils on `--octo-pupil` |
+| `label`                                        | `ReactNode`         | `'One moment please…'` | `null` renders the sprite on its own                                                                        |
+| `size`                                         | `number`            | `60`                   | Width in px. The sprite is 30 pixels wide, so multiples of 30 keep every pixel square                       |
+| `speed`                                        | `number`            | `1`                    | Multiplier on every clock                                                                                   |
+| `delay`                                        | `number`            | `0`                    | Milliseconds to stay invisible. Renders nothing at all until it elapses                                     |
+| `progress`                                     | `number`            | —                      | `0`–`1` turns the loader determinate and draws a bar underneath                                             |
+| `bubbles`                                      | `boolean`           | `true`                 | Bubbles drifting up past the animal's left side. Adds headroom above it                                     |
+| `frame`                                        | `boolean`           | `false`                | Wraps it in an empty-state panel. Spans its container; give it a `maxWidth` to hold it in                   |
+| `announce`                                     | `string`            | —                      | Overrides the accessible name. Without it the visible label is the name                                     |
+| `className`, `style`, `id`, `data-*`, handlers |                     |                        | Anything a `div` takes, spread onto the wrapper                                                             |
 
 The wrapper is an inline flex column and sets no colour of its own, so the
 label and the `mono` sprite both take the surrounding text colour.
+
+It forwards a `ref` to that wrapper and passes through anything else a `div`
+accepts, so it drops into a design system without a wrapper of your own:
+
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+<OctoLoader ref={ref} id="pending" data-testid="loader" className="my-loader" />;
+```
+
+The attributes it works out for itself — `role`, `aria-label`,
+`aria-labelledby` and the `aria-value*` trio — are removed from the prop type
+rather than silently overwritten, so passing `aria-label` is a type error that
+points you at `announce`.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/sizes-dark.png">
@@ -130,11 +143,11 @@ An indicator is not free. One that appears for 200ms and vanishes reads as a
 glitch; one that spins with no end in sight reads as a hang. [Primer][primer]
 sets four windows, and the props map onto them:
 
-| Wait | What to show | How |
-| --- | --- | --- |
-| under 1s | nothing | `delay={1000}` |
-| 1–3s | indeterminate | `<OctoLoader delay={1000} />` |
-| 3–10s | determinate, if you can | `<OctoLoader progress={done / total} />` |
+| Wait     | What to show                   | How                                        |
+| -------- | ------------------------------ | ------------------------------------------ |
+| under 1s | nothing                        | `delay={1000}`                             |
+| 1–3s     | indeterminate                  | `<OctoLoader delay={1000} />`              |
+| 3–10s    | determinate, if you can        | `<OctoLoader progress={done / total} />`   |
 | over 10s | determinate, and stop blocking | `progress`, plus let people leave the page |
 
 <picture>
@@ -186,12 +199,12 @@ rather than a bug, so both are pinned by tests:
 
 Four kinds of clock run at once, and none of them line up:
 
-| Sequence | Period | What it does |
-| --- | --- | --- |
-| swim | 0.9s | the eight-frame arm cycle and the lift |
-| blink | 4.6s | eyes shut for 115ms |
-| glance | 7.3s | pupils one pixel left, later one pixel right |
-| bubbles | 2.6s, 3.2s, 3.8s | three bubbles drifting up past its left side |
+| Sequence | Period           | What it does                                 |
+| -------- | ---------------- | -------------------------------------------- |
+| swim     | 0.9s             | the eight-frame arm cycle and the lift       |
+| blink    | 4.6s             | eyes shut for 115ms                          |
+| glance   | 7.3s             | pupils one pixel left, later one pixel right |
+| bubbles  | 2.6s, 3.2s, 3.8s | three bubbles drifting up past its left side |
 
 Those periods share no factor on purpose, so nobody watching a loading screen
 ever sees the whole pattern come round.
@@ -249,10 +262,10 @@ test holds all three apart in both palettes.
 The sprite is `aria-hidden`, so nothing gets announced twice. The wrapper does
 the talking, and what it is depends on whether you handed it a `progress`:
 
-| | Role | Name |
-| --- | --- | --- |
-| indeterminate | `role="status"` | `aria-labelledby` pointing at the visible label |
-| determinate | `role="progressbar"` with `aria-valuenow/min/max` | the same |
+|               | Role                                              | Name                                            |
+| ------------- | ------------------------------------------------- | ----------------------------------------------- |
+| indeterminate | `role="status"`                                   | `aria-labelledby` pointing at the visible label |
+| determinate   | `role="progressbar"` with `aria-valuenow/min/max` | the same                                        |
 
 Naming the region from the text people can actually see is Primer's
 preference, and it keeps the two from drifting apart. Pass `announce` when the
@@ -284,13 +297,32 @@ but nothing travels across the screen.
 
 ## Footprint
 
-| Entry | Gzipped |
-| --- | --- |
-| `octoloader` (React) | 4.7 kB |
-| `octoloader/element` | 4.9 kB |
+| Entry                | Gzipped |
+| -------------------- | ------- |
+| `octoloader` (React) | 4.8 kB  |
+| `octoloader/element` | 4.9 kB  |
+
+One stylesheet, however many loaders. It is rendered as a hoisted `<style>`,
+so React 19 lifts it into `<head>` and de-duplicates it across every instance
+on the page; on React 17 and 18 each instance carries its own copy, which is
+harmless because SVG styles are document-global either way.
+
+The component is wrapped in `memo`, so a loader inside a component that
+re-renders on every keystroke does not re-reconcile its twenty-odd SVG nodes.
 
 No runtime dependencies. React is an optional peer, so importing
 `octoloader/element` on a page with no React pulls in nothing extra.
+
+## Browser support
+
+Anything that understands CSS custom properties, `steps()` timing and
+`prefers-reduced-motion` — Chrome, Edge, Firefox and Safari from 2020 onward.
+There is no polyfill and no fallback path, because there is nothing to fall
+back to: without the animation you have a still octopus, which still says
+"waiting".
+
+`<octo-loader>` additionally needs custom elements and shadow DOM, the same
+vintage. The React entry needs none of that.
 
 ## Editing the octopus
 

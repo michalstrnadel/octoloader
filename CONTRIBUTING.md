@@ -8,11 +8,16 @@ browser ESM and touches no Node API.
 
 ```sh
 npm install
-npm test          # vitest, happy-dom
+npm test           # vitest, happy-dom, @testing-library/react
+npm run lint       # eslint, type-aware
+npm run format     # prettier
 npm run typecheck
-npm run build     # tsup, ESM + .d.ts
-npx serve .       # then open /demo/
+npm run build      # tsup, ESM + .d.ts
+npx serve .        # then open /demo/
 ```
+
+CI runs `lint`, `format:check`, `typecheck`, `test` and `build` on Node 20, 22
+and 24. Running the same five locally is the whole pre-flight.
 
 `demo/index.html` imports `dist/element.js` as a module, so it needs a server —
 browsers refuse module imports over `file://`. Run `npm run build` first.

@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # The workflows publish to a registry, so a compromised action is the shortest
+  # path into the package. Keep them current.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'ci'
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'build'
+      prefix-development: 'chore'
+    # Everything here is a devDependency — the package ships none. One pull
+    # request a month for the toolchain beats twelve.
+    groups:
+      toolchain:
+        patterns: ['*']

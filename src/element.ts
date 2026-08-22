@@ -192,17 +192,17 @@ export class OctoLoaderElement extends HTMLElement {
     // octopus — a box drawn tight around the content reads as a badge, not as
     // the space something is about to appear in.
     const panel = frame
-      ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;'
-        + 'padding:2em 2.5em;border:1px solid var(--octo-frame,rgba(128,128,128,.28));'
-        + 'border-radius:var(--octo-frame-radius,6px);'
+      ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;' +
+        'padding:2em 2.5em;border:1px solid var(--octo-frame,rgba(128,128,128,.28));' +
+        'border-radius:var(--octo-frame-radius,6px);'
       : '';
 
     const style = document.createElement('style');
     style.textContent =
-      ':host{display:inline-flex;flex-direction:column;align-items:center;gap:.75em;'
-      + panel
-      + `--octo-swim:${0.9 / speed}s;--octo-blink:${4.6 / speed}s;`
-      + `--octo-glance:${7.3 / speed}s;--octo-rate:${speed}}${CSS}`;
+      ':host{display:inline-flex;flex-direction:column;align-items:center;gap:.75em;' +
+      panel +
+      `--octo-swim:${0.9 / speed}s;--octo-blink:${4.6 / speed}s;` +
+      `--octo-glance:${7.3 / speed}s;--octo-rate:${speed}}${CSS}`;
 
     this.#root.replaceChildren(style, spriteSvg(variant, size, bubbles, progress));
 

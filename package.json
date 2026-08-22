@@ -35,7 +35,8 @@
     "./sprite": {
       "types": "./dist/sprite.d.ts",
       "default": "./dist/sprite.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -50,7 +51,10 @@
     "prepare": "tsup",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+    "prepublishOnly": "npm run lint && npm run typecheck && npm test && npm run build",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,mjs,json,md,yml,html}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mjs,json,md,yml,html}\""
   },
   "peerDependencies": {
     "react": ">=17"
@@ -61,13 +65,20 @@
     }
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.2.4",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "happy-dom": "^20.11.6",
+    "prettier": "^3.9.6",
     "react": "^19.0.0",
     "react-dom": "^19.2.8",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
+    "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11"
   },
   "keywords": [

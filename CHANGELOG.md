@@ -48,6 +48,19 @@ Behaviour follows [Primer's loading pattern][primer].
   reads as a badge instead of as the space something is about to appear in.
   `--octo-frame` and `--octo-frame-radius` move it.
 
+### Fitting into a codebase
+
+- Forwards a `ref` to the wrapper and spreads through anything else a `div`
+  takes — `id`, `data-*`, event handlers, `title`. The attributes the component
+  owns (`role`, `aria-label`, `aria-labelledby`, the `aria-value*` trio) are
+  removed from the prop type rather than silently overwritten, so reaching for
+  one is a type error pointing at `announce`.
+- One stylesheet per page rather than one per loader. It renders as a hoisted
+  `<style>`, which React 19 lifts into `<head>` and de-duplicates; SVG styles
+  were always document-global, so the copies were pure waste.
+- Wrapped in `memo`, so a loader inside a component that re-renders often does
+  not re-reconcile its SVG each time.
+
 ### The package
 
 - React component and a framework-free `<octo-loader>` custom element. No
@@ -55,7 +68,10 @@ Behaviour follows [Primer's loading pattern][primer].
 - 4.6 kB gzipped for the React entry, types included.
 - `toPaths`, `stripPaths`, `diff`, `progressBar` and the layout constants are
   exported, for anyone who wants the sprite without the component.
-- 77 tests that guard the drawing as much as the code: no frame may repeat in a
+- 87 tests that guard the drawing as much as the code: no frame may repeat in a
   cycle, the arms must sweep out and back, a pose keeps its height, the
   silhouette seals no background pixel, and both palettes hold their tones
-  apart.
+  apart. The React entry is exercised in a real document as well as on the
+  server, so the delay's timer and its cleanup are covered.
+- ESLint with type-aware rules and Prettier, both enforced in CI across Node
+  20, 22 and 24.
