@@ -1,6 +1,6 @@
 {
   "name": "octoloader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A pixel-art octopus that swims while you wait. Dependency-free loading indicator for React or plain HTML — colour and monochrome, determinate and indeterminate.",
   "license": "MIT",
   "author": "Michal Strnadel (https://michalstrnadel.com)",
