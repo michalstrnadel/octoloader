@@ -2,6 +2,10 @@
 
 Small package, short rules.
 
+Building it needs Node 20 or newer — vitest reaches for `node:util`'s
+`styleText`. Using it needs nothing of the sort: the published output is
+browser ESM and touches no Node API.
+
 ```sh
 npm install
 npm test          # vitest, happy-dom

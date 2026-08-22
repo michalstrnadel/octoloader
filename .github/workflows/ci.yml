@@ -20,7 +20,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20, 22]
+        # The toolchain needs 20+ — vitest reaches for node:util's styleText.
+        # The published package is browser ESM and touches no Node API at all.
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +42,7 @@ jobs:
       # The sprite is the product. A regression here is a bigger deal than a
       # few extra bytes, but silent growth is how a 4 kB loader becomes 40.
       - name: Report gzipped size
-        if: matrix.node == 22
+        if: matrix.node == 24
         run: |
           size=$(cat dist/index.js dist/chunk-*.js | gzip -9 | wc -c)
           echo "React entry: ${size} B gzipped" >> "$GITHUB_STEP_SUMMARY"
