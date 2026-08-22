@@ -61,14 +61,23 @@ Behaviour follows [Primer's loading pattern][primer].
 - Wrapped in `memo`, so a loader inside a component that re-renders often does
   not re-reconcile its SVG each time.
 
+### Without a framework
+
+- Every option is a property on `<octo-loader>` as well as an attribute, since
+  half the frameworks that consume a custom element bind properties and never
+  call `setAttribute`. Each accessor reads and writes the attribute, so there
+  is one piece of state and it lives in the DOM.
+- `HTMLElementTagNameMap` is augmented, so `document.querySelector('octo-loader')`
+  is typed as `OctoLoaderElement`.
+
 ### The package
 
 - React component and a framework-free `<octo-loader>` custom element. No
   runtime dependencies; React is an optional peer.
-- 4.6 kB gzipped for the React entry, types included.
+- 4.8 kB gzipped for the React entry, types included.
 - `toPaths`, `stripPaths`, `diff`, `progressBar` and the layout constants are
   exported, for anyone who wants the sprite without the component.
-- 87 tests that guard the drawing as much as the code: no frame may repeat in a
+- 89 tests that guard the drawing as much as the code: no frame may repeat in a
   cycle, the arms must sweep out and back, a pose keeps its height, the
   silhouette seals no background pixel, and both palettes hold their tones
   apart. The React entry is exercised in a real document as well as on the

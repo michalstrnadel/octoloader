@@ -107,6 +107,21 @@ shadow root, so nothing on the page can style it by accident. `progress` is
 whatever `Number()` makes of it; leave the attribute off for the indeterminate
 swim.
 
+Every option is a property too, because half the frameworks that consume a
+custom element bind properties and never call `setAttribute`. Each accessor
+reads and writes the attribute, so the two cannot disagree — there is one piece
+of state and it lives in the DOM.
+
+```js
+const loader = document.querySelector('octo-loader');
+loader.variant = 'mono';
+loader.progress = done / total; // null for indeterminate
+loader.frame = true;
+```
+
+TypeScript knows the tag, so `document.querySelector('octo-loader')` comes back
+as an `OctoLoaderElement` rather than an `Element`.
+
 ## In an empty state
 
 A loader on its own floats. `frame` puts it in the panel an empty state
@@ -300,7 +315,7 @@ but nothing travels across the screen.
 | Entry                | Gzipped |
 | -------------------- | ------- |
 | `octoloader` (React) | 4.8 kB  |
-| `octoloader/element` | 4.9 kB  |
+| `octoloader/element` | 5.2 kB  |
 
 One stylesheet, however many loaders. It is rendered as a hoisted `<style>`,
 so React 19 lifts it into `<head>` and de-duplicates it across every instance

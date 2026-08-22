@@ -135,10 +135,87 @@ export class OctoLoaderElement extends HTMLElement {
   #timer: ReturnType<typeof setTimeout> | undefined;
   #shown = false;
 
+  /*
+   * Properties over the attributes, because half the frameworks that consume a
+   * custom element bind properties and never touch `setAttribute`. Each one
+   * reads and writes the attribute, so the two can never disagree — there is
+   * one piece of state, and it is in the DOM.
+   */
+
+  get variant(): 'color' | 'mono' {
+    return this.getAttribute('variant') === 'mono' ? 'mono' : 'color';
+  }
+  set variant(value: 'color' | 'mono') {
+    this.setAttribute('variant', value);
+  }
+
+  get label(): string {
+    return this.getAttribute('label') ?? 'One moment please…';
+  }
+  set label(value: string) {
+    this.setAttribute('label', value);
+  }
+
+  get size(): number {
+    return Number(this.getAttribute('size')) || 60;
+  }
+  set size(value: number) {
+    this.setAttribute('size', String(value));
+  }
+
+  get speed(): number {
+    return Number(this.getAttribute('speed')) || 1;
+  }
+  set speed(value: number) {
+    this.setAttribute('speed', String(value));
+  }
+
+  get delay(): number {
+    return Number(this.getAttribute('delay')) || 0;
+  }
+  set delay(value: number) {
+    this.setAttribute('delay', String(value));
+  }
+
+  /** `null` while the finish time is unknown. */
+  get progress(): number | null {
+    const parsed = Number(this.getAttribute('progress'));
+    return this.hasAttribute('progress') && Number.isFinite(parsed)
+      ? Math.min(1, Math.max(0, parsed))
+      : null;
+  }
+  set progress(value: number | null) {
+    if (value === null) this.removeAttribute('progress');
+    else this.setAttribute('progress', String(value));
+  }
+
+  get bubbles(): boolean {
+    return this.getAttribute('bubbles') !== 'false';
+  }
+  set bubbles(value: boolean) {
+    this.setAttribute('bubbles', String(value));
+  }
+
+  get frame(): boolean {
+    return this.hasAttribute('frame') && this.getAttribute('frame') !== 'false';
+  }
+  set frame(value: boolean) {
+    if (value) this.setAttribute('frame', '');
+    else this.removeAttribute('frame');
+  }
+
+  get announce(): string | null {
+    return this.getAttribute('announce');
+  }
+  set announce(value: string | null) {
+    if (value === null) this.removeAttribute('announce');
+    else this.setAttribute('announce', value);
+  }
+
   connectedCallback() {
     // A wait under a second should show nothing at all, so `delay` holds the
     // loader back and it only appears once the wait turns out to be real.
-    const delay = Number(this.getAttribute('delay')) || 0;
+    const { delay } = this;
     if (delay > 0) {
       this.#root.replaceChildren();
       this.#timer = setTimeout(() => {
@@ -162,22 +239,13 @@ export class OctoLoaderElement extends HTMLElement {
   }
 
   #render() {
-    const variant = this.getAttribute('variant') ?? 'color';
-    const size = Number(this.getAttribute('size')) || 60;
-    const speed = Number(this.getAttribute('speed')) || 1;
-    const label = this.getAttribute('label') ?? 'One moment please…';
-    const bubbles = this.getAttribute('bubbles') !== 'false';
-    // Off unless asked for, so presence turns it on and `frame="false"` does not.
-    const frame = this.hasAttribute('frame') && this.getAttribute('frame') !== 'false';
-
-    const raw = this.getAttribute('progress');
-    const parsed = raw === null ? Number.NaN : Number(raw);
-    const progress = Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : null;
+    // Read through the accessors, so the parsing lives in exactly one place.
+    const { variant, size, speed, label, bubbles, frame, progress } = this;
 
     // aria-labelledby cannot reach across the shadow boundary, so the name is
     // spelled out on the host instead of pointed at the text inside.
     this.setAttribute('role', progress === null ? 'status' : 'progressbar');
-    this.setAttribute('aria-label', this.getAttribute('announce') ?? label ?? 'Loading');
+    this.setAttribute('aria-label', this.announce ?? label ?? 'Loading');
     if (progress === null) {
       this.removeAttribute('aria-valuenow');
       this.removeAttribute('aria-valuemin');
@@ -217,4 +285,11 @@ export class OctoLoaderElement extends HTMLElement {
 
 if (!customElements.get('octo-loader')) {
   customElements.define('octo-loader', OctoLoaderElement);
+}
+
+declare global {
+  // So `document.querySelector('octo-loader')` is typed, rather than Element.
+  interface HTMLElementTagNameMap {
+    'octo-loader': OctoLoaderElement;
+  }
 }

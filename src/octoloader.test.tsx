@@ -380,6 +380,45 @@ describe('<octo-loader>', () => {
     expect(css()).not.toContain('--octo-frame');
   });
 
+  it('answers to properties as well as attributes', () => {
+    // Half the frameworks that consume a custom element bind properties and
+    // never call setAttribute, so the two have to be the same state.
+    document.body.innerHTML = '<octo-loader></octo-loader>';
+    const el = document.querySelector('octo-loader')!;
+
+    expect(el.variant).toBe('color');
+    expect(el.size).toBe(60);
+    expect(el.progress).toBeNull();
+    expect(el.frame).toBe(false);
+
+    el.variant = 'mono';
+    el.size = 120;
+    el.progress = 0.5;
+    el.frame = true;
+
+    expect(el.getAttribute('variant')).toBe('mono');
+    expect(el.getAttribute('size')).toBe('120');
+    expect(el.getAttribute('progress')).toBe('0.5');
+    expect(el.hasAttribute('frame')).toBe(true);
+    expect(el.shadowRoot!.querySelector('svg')!.getAttribute('width')).toBe('120');
+    expect(el.shadowRoot!.querySelector('.octo-bar')).not.toBeNull();
+
+    el.progress = null;
+    el.frame = false;
+    expect(el.hasAttribute('progress')).toBe(false);
+    expect(el.hasAttribute('frame')).toBe(false);
+    expect(el.getAttribute('role')).toBe('status');
+  });
+
+  it('clamps a progress property the way it clamps the attribute', () => {
+    document.body.innerHTML = '<octo-loader></octo-loader>';
+    const el = document.querySelector('octo-loader')!;
+    el.progress = 4;
+    expect(el.progress).toBe(1);
+    el.progress = -1;
+    expect(el.progress).toBe(0);
+  });
+
   it('speaks the visible text unless it is told otherwise', () => {
     document.body.innerHTML = '<octo-loader></octo-loader>';
     const el = document.querySelector('octo-loader')!;
