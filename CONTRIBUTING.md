@@ -74,16 +74,23 @@ than a bug:
 - A bug fix comes with the test that would have caught it.
 - Anything user-visible gets a line in `CHANGELOG.md` under `## Unreleased`.
 - `npm test && npm run typecheck && npm run build` has to pass. CI runs the
-  same three on Node 18, 20 and 22.
+  same three on Node 20, 22 and 24.
 
 ## Releasing
 
-Maintainers only.
+Maintainers only. Nothing publishes from a laptop — push a tag and
+`.github/workflows/release.yml` does it, authenticating to npm with a
+short-lived OIDC token instead of a stored secret. That is also what earns the
+provenance badge: npm can attest which commit and which workflow run built the
+tarball.
 
 ```sh
-npm version <patch|minor|major>   # prepublishOnly reruns typecheck, tests, build
-npm publish                       # publishConfig sets access and provenance
+# 1. Move the changes under the new number in CHANGELOG.md
+# 2. Bump, tag and push
+npm version <patch|minor|major>
 git push --follow-tags
 ```
 
-Move the `## Unreleased` block in `CHANGELOG.md` under the new number first.
+The workflow refuses to publish if the tag and `package.json` disagree — a
+mismatch ships the wrong number under the right name, and npm will not let you
+take it back.

@@ -1,0 +1,65 @@
+name: Release
+
+# Push a tag, get a published package. Nothing publishes from a laptop.
+#
+# Authentication is npm's trusted publishing: the registry accepts a short-lived
+# OIDC token minted by this workflow instead of a long-lived secret, so there is
+# no NPM_TOKEN to leak or rotate. It also means npm can attest where the tarball
+# came from — the provenance badge on the package page links back to this run.
+#
+# One-time setup on npmjs.com, under the package's Settings → Trusted publisher:
+#   organisation/user  michalstrnadel
+#   repository         octoloader
+#   workflow           release.yml
+# The first publish of a brand-new name has to be done by hand, because there is
+# no package page to configure yet. Everything after that comes through here.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write # to cut the GitHub release
+  id-token: write # to mint the OIDC token npm checks
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs a recent npm; the bundled one may lag.
+      - run: npm install -g npm@latest
+
+      - run: npm ci
+
+      # A tag that disagrees with package.json publishes the wrong number under
+      # the right name, and npm will not let you take it back.
+      - name: Check the tag matches package.json
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag v$tag but package.json says $pkg"
+            exit 1
+          fi
+
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - run: npm publish
+
+      - name: Cut the GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
