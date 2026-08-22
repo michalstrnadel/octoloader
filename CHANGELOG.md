@@ -4,6 +4,15 @@ Notable changes, newest first. This project follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.1
+
+### Fixed
+
+- The README's images now use absolute URLs. Relative `docs/…` paths resolve on
+  GitHub and nowhere else: `docs/` is not in the published tarball, and npm does
+  not rewrite the `srcset` inside a `<picture>`, so the package page showed a
+  README with no octopus in it — which for this package is most of the argument.
+
 ## 0.1.0
 
 First release.

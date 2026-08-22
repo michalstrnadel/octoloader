@@ -133,6 +133,11 @@ npm version <patch|minor|major>
 git push --follow-tags
 ```
 
+Images in the README must be absolute
+`https://raw.githubusercontent.com/michalstrnadel/octoloader/main/docs/…` URLs.
+A relative path works on GitHub and breaks on npm, where `docs/` is not in the
+tarball and the `srcset` inside a `<picture>` is left alone.
+
 The workflow refuses to publish if the tag and `package.json` disagree — a
 mismatch ships the wrong number under the right name, and npm will not let you
 take it back.
