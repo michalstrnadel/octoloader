@@ -22,6 +22,18 @@ CI runs `lint`, `format:check`, `typecheck`, `test`, `build` and the manifest
 check on Node 20, 22 and 24, plus the browser suite once on Chromium. Running
 the same locally is the whole pre-flight.
 
+**After adding or updating a dependency, run `npm run lock`.** A plain
+`npm install` on macOS writes a lockfile that omits the transitive dependencies
+of Linux-only optional binaries — `@oxc-resolver`'s wasm fallback is the one
+that bites here — and `npm ci` on the runner then refuses it with
+`Missing: … from lock file`. That script re-resolves with `--os=linux`, which
+produces a lockfile both platforms accept. You can check it without waiting for
+CI:
+
+```sh
+npm ci --dry-run --os=linux --cpu=x64
+```
+
 ## Three layers of test, and what each is for
 
 - **Unit** (`npm test`) — the drawing, the geometry, the two entry points. Fast,
