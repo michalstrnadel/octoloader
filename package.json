@@ -45,6 +45,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "docs": "npm run build && node scripts/export-sprite.mjs && python3 scripts/render-docs.py",
     "dev": "tsup --watch",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

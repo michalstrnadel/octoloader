@@ -4,7 +4,6 @@
 
 **A pixel-art octopus that swims while you wait.**
 
-[![npm](https://img.shields.io/npm/v/octoloader?color=4cc9f0&label=npm)](https://www.npmjs.com/package/octoloader)
 [![bundle](https://img.shields.io/badge/gzipped-4.6%20kB-4cc9f0)](#footprint)
 [![types](https://img.shields.io/badge/types-included-4cc9f0)](#react)
 [![dependencies](https://img.shields.io/badge/dependencies-0-4cc9f0)](package.json)
@@ -12,6 +11,11 @@
 [![licence](https://img.shields.io/badge/licence-MIT-4cc9f0)](LICENSE)
 
 React component · custom element · colour and monochrome · determinate and indeterminate
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/hero-dark.gif">
+  <img src="docs/hero-light.gif" width="238" alt="A pixel-art octopus swimming in place, arms sweeping out and back, with bubbles drifting up past its left side">
+</picture>
 
 </div>
 
@@ -60,6 +64,14 @@ import { OctoLoader } from 'octoloader';
 The wrapper is an inline flex column and sets no colour of its own, so the
 label and the `mono` sprite both take the surrounding text colour.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/sizes-dark.png">
+  <img src="docs/sizes-light.png" width="306" alt="The same octopus at 30, 60 and 120 pixels wide, every pixel still square">
+</picture>
+
+`size` 30, 60 and 120. Every pixel stays square because each is a multiple of
+the sprite's own 30.
+
 ## Without React
 
 ```html
@@ -89,6 +101,11 @@ sets four windows, and the props map onto them:
 | 3–10s | determinate, if you can | `<OctoLoader progress={done / total} />` |
 | over 10s | determinate, and stop blocking | `progress`, plus let people leave the page |
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/progress-dark.gif">
+  <img src="docs/progress-light.gif" width="368" alt="Two octopuses, colour and monochrome, each with a pixel progress bar underneath filling from left to right">
+</picture>
+
 `delay` is the one worth wiring up everywhere. Most requests come back fast,
 and a loader that only appears when the wait turns out to be real is the
 difference between a page that feels quick and one that flickers.
@@ -111,6 +128,11 @@ frame   1     2     3     4     5     6     7     8
 pose    0     1     2     3     4     3     2     1
 lift    0px   0px   1px   1px   2px   1px   1px   0px
 ```
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/frames-dark.png">
+  <img src="docs/frames-light.png" width="818" alt="The eight swim frames laid out side by side, arms opening and closing, the body sitting a pixel or two lower in the middle of the cycle">
+</picture>
 
 The lift is the part that matters. The whole animal rises as its arms draw in
 and settles as they spread, the way an octopus jets. Take it away and eight
@@ -156,6 +178,11 @@ outside the group the reduced-motion pulse applies to, so a bar that is at 40%
 stays at 40%.
 
 ## The monochrome variant is three tones, not two
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/variants-dark.gif">
+  <img src="docs/variants-light.gif" width="368" alt="The colour octopus beside the monochrome one, both swimming, on the page's own background">
+</picture>
 
 The obvious monochrome is one ink with the eyes punched out. It looks correct
 on a white page and turns into a skull on a black one — the body goes light,

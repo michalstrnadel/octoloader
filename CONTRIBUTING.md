@@ -41,6 +41,17 @@ the eyes punched out looks correct on white and turns into a skull on black.
 Render before you judge. A frame that reads fine as text can read as a blob at
 30 pixels wide — open the demo at `size="30"` as well as `size="120"`.
 
+Then regenerate the pictures in the README:
+
+```sh
+npm run docs      # needs Python 3 and Pillow: pip install pillow
+```
+
+`scripts/render-docs.py` evaluates every clock exactly the way the stylesheet
+does and draws straight from `dist`, so the GIFs cannot drift from the
+component. Commit whatever it changes under `docs/` — a README showing last
+month's octopus is worse than one showing none.
+
 ## Changing the animation
 
 The frames sit side by side in one strip and the strip slides under the viewBox
