@@ -1,0 +1,72 @@
+name: Bug report
+description: Something renders wrong, animates wrong, or throws.
+labels: ['bug', 'needs triage']
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you see, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: >
+        The smallest markup or JSX that shows it. A screenshot or short
+        recording helps a lot for anything visual — describing a one-pixel
+        flicker in words is hard.
+      placeholder: |
+        <OctoLoader variant="mono" size={30} progress={0.5} />
+      render: jsx
+    validations:
+      required: true
+
+  - type: dropdown
+    id: entry
+    attributes:
+      label: Which entry
+      options:
+        - octoloader (React)
+        - octoloader/element (custom element)
+        - octoloader/sprite
+    validations:
+      required: true
+
+  - type: dropdown
+    id: variant
+    attributes:
+      label: Variant
+      options:
+        - color
+        - mono
+        - both
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: octoloader version
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Browser and OS
+      placeholder: Safari 18.3, macOS 15.3
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: motion
+    attributes:
+      label: Anything else on
+      options:
+        - label: prefers-reduced-motion is set to reduce
+        - label: The page is in dark mode
+        - label: There are several loaders on the page at once

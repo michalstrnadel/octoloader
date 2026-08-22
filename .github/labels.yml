@@ -1,0 +1,53 @@
+# Issue labels. Apply with:
+#   gh label create <name> --color <color> --description "<description>" --force
+#
+# Kept short on purpose — a label set nobody can hold in their head does not
+# get used.
+
+- name: bug
+  color: d73a4a
+  description: Renders wrong, animates wrong, or throws
+
+- name: enhancement
+  color: 4cc9f0
+  description: A prop, an attribute, or a new capability
+
+- name: needs triage
+  color: ededed
+  description: Not looked at yet
+
+- name: sprite
+  color: b27ed6
+  description: The drawing itself — frames, palette, silhouette
+
+- name: animation
+  color: 8a5bb0
+  description: Timing, frames, the strip, reduced motion
+
+- name: accessibility
+  color: 0e8a16
+  description: Roles, names, announcements, motion preferences
+
+- name: docs
+  color: 0075ca
+  description: README, changelog, examples
+
+- name: react
+  color: 61dafb
+  description: The React entry
+
+- name: custom element
+  color: f0e0fb
+  description: The framework-free entry
+
+- name: good first issue
+  color: 7057ff
+  description: Small, self-contained, well described
+
+- name: help wanted
+  color: 008672
+  description: Open to anyone picking it up
+
+- name: wontfix
+  color: ffffff
+  description: Deliberate, or out of scope for a loading indicator

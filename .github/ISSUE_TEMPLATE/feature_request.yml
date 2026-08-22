@@ -1,0 +1,35 @@
+name: Feature request
+description: A prop, an attribute, or something the octopus should be able to do.
+labels: ['enhancement', 'needs triage']
+body:
+  - type: markdown
+    attributes:
+      value: >
+        This is a loading indicator, deliberately small. The bar for a new prop
+        is that it cannot be done from the outside with CSS or a wrapper.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you are trying to do
+      description: The situation, not the API you have in mind for it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: shape
+    attributes:
+      label: What it might look like
+      render: jsx
+    validations:
+      required: false
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: What you do today
+      description: >
+        Wrapping it, overriding a CSS variable, forking the sprite — whatever
+        it is, and why it is not enough.
+    validations:
+      required: true

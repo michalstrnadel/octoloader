@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - run: npm run build
+
+      # The sprite is the product. A regression here is a bigger deal than a
+      # few extra bytes, but silent growth is how a 4 kB loader becomes 40.
+      - name: Report gzipped size
+        if: matrix.node == 22
+        run: |
+          size=$(cat dist/index.js dist/chunk-*.js | gzip -9 | wc -c)
+          echo "React entry: ${size} B gzipped" >> "$GITHUB_STEP_SUMMARY"

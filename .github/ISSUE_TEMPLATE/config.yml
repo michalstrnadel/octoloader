@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/michalstrnadel/octoloader/discussions
+    about: Anything that is not yet a bug or a concrete request.
+  - name: Loading UX guidance
+    url: https://primer.style/product/ui-patterns/loading/
+    about: When to show an indicator, and which one. This package follows it.
