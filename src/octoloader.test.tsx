@@ -498,7 +498,7 @@ describe('<OctoLoader>', () => {
     expect(measured).toContain('octo-bar');
   });
 
-  it('draws the empty-state panel only when it is asked for', () => {
+  it('draws the panel only when it is asked for', () => {
     const bare = renderToStaticMarkup(<OctoLoader />);
     expect(bare).not.toContain('border');
     expect(bare).toContain('display:inline-flex');
@@ -506,7 +506,7 @@ describe('<OctoLoader>', () => {
     const framed = renderToStaticMarkup(<OctoLoader frame />);
     expect(framed).toContain('--octo-frame');
     expect(framed).toContain('border-radius');
-    // Spans its container, so it reads as a place rather than a badge.
+    // Spans its container, so it outlines a region rather than reading as a badge.
     expect(framed).toContain('width:100%');
     expect(framed).toContain('box-sizing:border-box');
     expect(framed).toContain('display:flex');

@@ -256,13 +256,13 @@ export class OctoLoaderElement extends HTMLElement {
       this.setAttribute('aria-valuemax', '100');
     }
 
-    // The empty-state panel spans its container rather than hugging the
-    // octopus — a box drawn tight around the content reads as a badge, not as
-    // the space something is about to appear in.
+    // The panel spans its container rather than hugging the octopus, because
+    // its job is to outline the region the content will land in — a box drawn
+    // tight around the animal reads as a badge instead.
     const panel = frame
       ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;' +
-        'padding:2em 2.5em;border:1px solid var(--octo-frame,rgba(128,128,128,.28));' +
-        'border-radius:var(--octo-frame-radius,6px);'
+        'padding:3.5em 2em;border:1px solid var(--octo-frame,rgba(128,128,128,.28));' +
+        'border-radius:var(--octo-frame-radius,12px);'
       : '';
 
     const style = document.createElement('style');

@@ -89,10 +89,10 @@ export interface OctoLoaderProps extends Omit<ComponentPropsWithoutRef<'div'>, O
   /** Bubbles drifting up past the animal's left side. Adds headroom above it. */
   bubbles?: boolean;
   /**
-   * Wrap it in an empty-state panel — a hairline border, a radius and room to
-   * breathe. Spans its container, the way an empty state does; give it a
-   * `maxWidth` to hold it in. Colour and radius are `--octo-frame` and
-   * `--octo-frame-radius`.
+   * Wrap it in a panel — a hairline border, a radius and room to breathe — so
+   * the loader marks out which region of the page is waiting. Spans its
+   * container; give it a `maxWidth` to hold it in. Colour and radius are
+   * `--octo-frame` and `--octo-frame-radius`.
    */
   frame?: boolean;
   /**
@@ -110,21 +110,22 @@ const wrapperStyle: CSSProperties = {
 };
 
 /**
- * The panel an empty state sits in.
+ * The panel a loading state sits in.
  *
- * It spans its container rather than hugging the octopus, because a box drawn
- * tight around the content reads as a badge, not as the space where something
- * is about to appear. A neutral grey at low alpha rather than `currentColor`,
- * so one value holds on a light page and a dark one.
+ * It spans its container rather than hugging the octopus, because the panel's
+ * job is to outline the region the content will land in — a box drawn tight
+ * around the animal reads as a badge instead. A neutral grey at low alpha
+ * rather than `currentColor`, so one value holds on a light page and a dark
+ * one.
  */
 const frameStyle: CSSProperties = {
   display: 'flex',
   width: '100%',
   boxSizing: 'border-box',
   justifyContent: 'center',
-  padding: '2em 2.5em',
+  padding: '3.5em 2em',
   border: '1px solid var(--octo-frame, rgba(128,128,128,0.28))',
-  borderRadius: 'var(--octo-frame-radius, 6px)',
+  borderRadius: 'var(--octo-frame-radius, 12px)',
 };
 
 /**

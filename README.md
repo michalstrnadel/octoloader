@@ -53,18 +53,18 @@ import { OctoLoader } from 'octoloader';
 <OctoLoader size={90} speed={1.5} label={null} bubbles={false} />
 ```
 
-| Prop                                           | Type                | Default                |                                                                                                             |
-| ---------------------------------------------- | ------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `variant`                                      | `'color' \| 'mono'` | `'color'`              | `mono` follows `currentColor`, with the eyes and suckers on `--octo-paper` and the pupils on `--octo-pupil` |
-| `label`                                        | `ReactNode`         | `'One moment please…'` | `null` renders the sprite on its own                                                                        |
-| `size`                                         | `number`            | `60`                   | Width in px. The sprite is 30 pixels wide, so multiples of 30 keep every pixel square                       |
-| `speed`                                        | `number`            | `1`                    | Multiplier on every clock                                                                                   |
-| `delay`                                        | `number`            | `0`                    | Milliseconds to stay invisible. Renders nothing at all until it elapses                                     |
-| `progress`                                     | `number`            | —                      | `0`–`1` turns the loader determinate and draws a bar underneath                                             |
-| `bubbles`                                      | `boolean`           | `true`                 | Bubbles drifting up past the animal's left side. Adds headroom above it                                     |
-| `frame`                                        | `boolean`           | `false`                | Wraps it in an empty-state panel. Spans its container; give it a `maxWidth` to hold it in                   |
-| `announce`                                     | `string`            | —                      | Overrides the accessible name. Without it the visible label is the name                                     |
-| `className`, `style`, `id`, `data-*`, handlers |                     |                        | Anything a `div` takes, spread onto the wrapper                                                             |
+| Prop                                           | Type                | Default                |                                                                                                                |
+| ---------------------------------------------- | ------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `variant`                                      | `'color' \| 'mono'` | `'color'`              | `mono` follows `currentColor`, with the eyes and suckers on `--octo-paper` and the pupils on `--octo-pupil`    |
+| `label`                                        | `ReactNode`         | `'One moment please…'` | `null` renders the sprite on its own                                                                           |
+| `size`                                         | `number`            | `60`                   | Width in px. The sprite is 30 pixels wide, so multiples of 30 keep every pixel square                          |
+| `speed`                                        | `number`            | `1`                    | Multiplier on every clock                                                                                      |
+| `delay`                                        | `number`            | `0`                    | Milliseconds to stay invisible. Renders nothing at all until it elapses                                        |
+| `progress`                                     | `number`            | —                      | `0`–`1` turns the loader determinate and draws a bar underneath                                                |
+| `bubbles`                                      | `boolean`           | `true`                 | Bubbles drifting up past the animal's left side. Adds headroom above it                                        |
+| `frame`                                        | `boolean`           | `false`                | Wraps it in a panel that marks out the waiting region. Spans its container; give it a `maxWidth` to hold it in |
+| `announce`                                     | `string`            | —                      | Overrides the accessible name. Without it the visible label is the name                                        |
+| `className`, `style`, `id`, `data-*`, handlers |                     |                        | Anything a `div` takes, spread onto the wrapper                                                                |
 
 The wrapper is an inline flex column and sets no colour of its own, so the
 label and the `mono` sprite both take the surrounding text colour.
@@ -122,14 +122,16 @@ loader.frame = true;
 TypeScript knows the tag, so `document.querySelector('octo-loader')` comes back
 as an `OctoLoaderElement` rather than an `Element`.
 
-## In an empty state
+## Marking out what is waiting
 
-A loader on its own floats. `frame` puts it in the panel an empty state
-usually occupies — a hairline border, a radius and room to breathe.
+A loader on its own floats, and floating it says only "something is happening".
+`frame` puts it in a panel — a hairline border, a radius and room to breathe —
+which says _this_ is the part that is waiting, and this is where the content
+will land.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/frame-dark.gif">
-  <img src="docs/frame-light.gif" width="464" alt="The loader centred inside a thin rounded panel, the way an empty state sits in a page">
+  <img src="docs/frame-light.gif" width="464" alt="The loader centred inside a thin rounded panel that outlines the region of the page still waiting for its content">
 </picture>
 
 ```jsx
@@ -137,9 +139,21 @@ usually occupies — a hairline border, a radius and room to breathe.
 <OctoLoader frame style={{ maxWidth: 420 }} />
 ```
 
-The panel spans its container rather than hugging the octopus, because a box
-drawn tight around the content reads as a badge instead of as the space
-something is about to appear in. Give it a `maxWidth` when you want it small.
+That is why the panel spans its container rather than hugging the octopus: it
+is standing in for the content, not decorating the animal. A box drawn tight
+around the sprite reads as a badge. Give it a `maxWidth` when you want it
+small.
+
+The panel is deliberately the same shape an empty state uses — shadcn's
+`Empty`, Primer's `Blankslate` — because it is the same slot in the page, and
+one region should not change size and radius depending on which state it is
+in. What differs is what the two say. An empty state says the data is not
+coming: nothing matched, nothing exists yet, here is what to do about it. This
+says the data is coming and has not arrived.
+
+So they hand over to each other. If the wait ends in nothing found, swap this
+for a real empty state with a way forward — leaving a loader up is how a page
+ends up looking hung.
 
 The border is one neutral grey at low alpha rather than `currentColor`, so a
 single value holds on a light page and a dark one — the same reasoning as the

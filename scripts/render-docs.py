@@ -136,7 +136,7 @@ def stack(sprite, text, bg, gap):
     return out
 
 
-def framed(content, bg, width, pad_x=40, pad_y=32, radius=6):
+def framed(content, bg, width, pad_x=32, pad_y=56, radius=12):
     """The `frame` prop: a hairline panel with the loader centred in it.
 
     The border is one neutral grey at low alpha rather than the page's ink,
@@ -209,7 +209,7 @@ for name, bg, mp, muted in (('progress-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
                          stack(draw(t, mp, bg, 4, p), say, bg, 11)], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
-# 4. The empty-state panel, which is where a loader this size usually lives.
+# 4. The panel, which is how a loader marks out the region that is waiting.
 for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK, MUTED_DARK)):
     say = caption(SAY, 15, rgb(muted), bg)
     fs = []

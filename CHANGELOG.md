@@ -42,10 +42,10 @@ Behaviour follows [Primer's loading pattern][primer].
 
 ### In a page
 
-- `frame` — wraps the loader in the panel an empty state occupies: a hairline
-  border, a radius, room to breathe. Off by default. It spans its container
-  rather than hugging the octopus, because a box drawn tight around the content
-  reads as a badge instead of as the space something is about to appear in.
+- `frame` — wraps the loader in a panel: a hairline border, a radius, room to
+  breathe. Off by default. It spans its container rather than hugging the
+  octopus, because the panel's job is to outline the region the content will
+  land in; a box drawn tight around the animal reads as a badge instead.
   `--octo-frame` and `--octo-frame-radius` move it.
 
 ### Fitting into a codebase
