@@ -8,7 +8,11 @@ otherwise every third frame would be held 50% longer and the swim would
 visibly limp.
 """
 import json, math, os
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+
+FONT = '/System/Library/Fonts/Helvetica.ttc'
+SAY = 'One moment please…'
+MUTED_LIGHT, MUTED_DARK = '#57606a', '#8b949e'
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'sprite.json')))
@@ -113,6 +117,25 @@ def draw(t, palette, bg, scale, progress=None):
     return img.resize((cw * scale, ch * scale), Image.NEAREST)
 
 
+def caption(text, size, colour, bg):
+    """The label under the animal — the other half of the loader."""
+    font = ImageFont.truetype(FONT, size)
+    probe = ImageDraw.Draw(Image.new('RGB', (1, 1)))
+    box = probe.textbbox((0, 0), text, font=font)
+    img = Image.new('RGB', (box[2] - box[0] + 2, box[3] - box[1] + 2), bg)
+    ImageDraw.Draw(img).text((-box[0] + 1, -box[1] + 1), text, font=font, fill=colour)
+    return img
+
+
+def stack(sprite, text, bg, gap):
+    """Sprite over label, centred on each other — the component's own layout."""
+    w = max(sprite.width, text.width)
+    out = Image.new('RGB', (w, sprite.height + gap + text.height), bg)
+    out.paste(sprite, ((w - sprite.width) // 2, 0))
+    out.paste(text, ((w - text.width) // 2, sprite.height + gap))
+    return out
+
+
 def strip(images, bg, gap, pad):
     """Lay images out in a row, bottom-aligned, on one ground."""
     w = sum(i.width for i in images) + gap * (len(images) - 1) + pad * 2
@@ -137,27 +160,38 @@ CYCLES = 9
 N = round(CYCLES * SWIM / STEP)
 LIGHT, DARK = rgb('#ffffff'), rgb('#0d1117')
 
-# 1. Hero — the colour character, one ground per theme.
-for name, bg in (('hero-light', LIGHT), ('hero-dark', DARK)):
-    fs = [strip([draw(WARM + n * STEP, COLOR, bg, 7)], bg, 0, 14) for n in range(N)]
+# 1. Hero — the whole loader, label and all. Sprite and text are kept near the
+#    ratio the component ships at, so it reads as a screenshot of the thing
+#    rather than a mascot with a caption bolted on.
+for name, bg, muted in (('hero-light', LIGHT, MUTED_LIGHT), ('hero-dark', DARK, MUTED_DARK)):
+    say = caption(SAY, 19, rgb(muted), bg)
+    fs = [strip([stack(draw(WARM + n * STEP, COLOR, bg, 6), say, bg, 14)], bg, 0, 18)
+          for n in range(N)]
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
 # 2. Both variants side by side, on the ground each theme actually has.
-for name, bg, mp in (('variants-light', LIGHT, MONO_LIGHT), ('variants-dark', DARK, MONO_DARK)):
+for name, bg, mp, muted in (('variants-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
+                            ('variants-dark', DARK, MONO_DARK, MUTED_DARK)):
+    say = caption(SAY, 15, rgb(muted), bg)
     fs = []
     for n in range(N):
         t = WARM + n * STEP
-        fs.append(strip([draw(t, COLOR, bg, 5), draw(t, mp, bg, 5)], bg, 40, 14))
+        fs.append(strip([stack(draw(t, COLOR, bg, 4), say, bg, 11),
+                         stack(draw(t, mp, bg, 4), say, bg, 11)], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
-# 3. Determinate — the bar walking its 28 positions while the animal swims.
+# 3. Determinate — the bar walking its 28 positions while the animal swims. The
+#    label counts along with it, because a bar with no number is half a report.
 PN = round(6 * SWIM / STEP)
-for name, bg, mp in (('progress-light', LIGHT, MONO_LIGHT), ('progress-dark', DARK, MONO_DARK)):
+for name, bg, mp, muted in (('progress-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
+                            ('progress-dark', DARK, MONO_DARK, MUTED_DARK)):
     fs = []
     for n in range(PN):
         t = WARM + n * STEP
         p = n / (PN - 1)
-        fs.append(strip([draw(t, COLOR, bg, 5, p), draw(t, mp, bg, 5, p)], bg, 40, 14))
+        say = caption(f'Uploading… {round(p * 100)}%', 15, rgb(muted), bg)
+        fs.append(strip([stack(draw(t, COLOR, bg, 4, p), say, bg, 11),
+                         stack(draw(t, mp, bg, 4, p), say, bg, 11)], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
 # 4. Sizes — one still, three scales, so the 30px case is judged at 30px.

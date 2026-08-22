@@ -14,7 +14,7 @@ React component · custom element · colour and monochrome · determinate and in
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/hero-dark.gif">
-  <img src="docs/hero-light.gif" width="238" alt="A pixel-art octopus swimming in place, arms sweeping out and back, with bubbles drifting up past its left side">
+  <img src="docs/hero-light.gif" width="228" alt="A pixel-art octopus swimming in place with bubbles drifting past it, and One moment please… written underneath">
 </picture>
 
 </div>
@@ -103,7 +103,7 @@ sets four windows, and the props map onto them:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/progress-dark.gif">
-  <img src="docs/progress-light.gif" width="368" alt="Two octopuses, colour and monochrome, each with a pixel progress bar underneath filling from left to right">
+  <img src="docs/progress-light.gif" width="316" alt="Two octopuses, colour and monochrome, each over a pixel progress bar filling from left to right and a label counting up to 100%">
 </picture>
 
 `delay` is the one worth wiring up everywhere. Most requests come back fast,
@@ -181,7 +181,7 @@ stays at 40%.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/variants-dark.gif">
-  <img src="docs/variants-light.gif" width="368" alt="The colour octopus beside the monochrome one, both swimming, on the page's own background">
+  <img src="docs/variants-light.gif" width="380" alt="The colour octopus beside the monochrome one, both swimming under the same label, on the page's own background">
 </picture>
 
 The obvious monochrome is one ink with the eyes punched out. It looks correct
