@@ -211,10 +211,12 @@ for name, bg, mp, muted in (('progress-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
 
 # 4. The panel, which is how a loader marks out the region that is waiting.
 for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK, MUTED_DARK)):
-    say = caption(SAY, 15, rgb(muted), bg)
+    # 60px sprite and a 14px label — the component's own defaults, so the
+    # picture shows what `<OctoLoader frame />` actually gives you.
+    say = caption(SAY, 14, rgb(muted), bg)
     fs = []
     for n in range(N):
-        inner = stack(draw(WARM + n * STEP, COLOR, bg, 3), say, bg, 10)
+        inner = stack(draw(WARM + n * STEP, COLOR, bg, 2), say, bg, 9)
         fs.append(strip([framed(inner, bg, 620)], bg, 0, 10))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 

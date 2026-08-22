@@ -14,7 +14,7 @@ React component · custom element · colour and monochrome · determinate and in
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/hero-dark.gif">
-  <img src="docs/hero-light.gif" width="228" alt="A pixel-art octopus swimming in place with bubbles drifting past it, and One moment please… written underneath">
+  <img width="228" height="268" src="docs/hero-light.gif" alt="A pixel-art octopus swimming in place with bubbles drifting past it, and One moment please… written underneath">
 </picture>
 
 </div>
@@ -84,7 +84,7 @@ points you at `announce`.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/sizes-dark.png">
-  <img src="docs/sizes-light.png" width="306" alt="The same octopus at 30, 60 and 120 pixels wide, every pixel still square">
+  <img width="306" height="164" src="docs/sizes-light.png" alt="The same octopus at 30, 60 and 120 pixels wide, every pixel still square">
 </picture>
 
 `size` 30, 60 and 120. Every pixel stays square because each is a multiple of
@@ -131,7 +131,7 @@ will land.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/frame-dark.gif">
-  <img src="docs/frame-light.gif" width="640" alt="The loader centred inside a thin rounded panel that outlines the region of the page still waiting for its content">
+  <img width="640" height="228" src="docs/frame-light.gif" alt="The loader centred inside a thin rounded panel that outlines the region of the page still waiting for its content">
 </picture>
 
 ```jsx
@@ -196,7 +196,7 @@ sets four windows, and the props map onto them:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/progress-dark.gif">
-  <img src="docs/progress-light.gif" width="316" alt="Two octopuses, colour and monochrome, each over a pixel progress bar filling from left to right and a label counting up to 100%">
+  <img width="316" height="211" src="docs/progress-light.gif" alt="Two octopuses, colour and monochrome, each over a pixel progress bar filling from left to right and a label counting up to 100%">
 </picture>
 
 `delay` is the one worth wiring up everywhere. Most requests come back fast,
@@ -224,7 +224,7 @@ lift    0px   0px   1px   1px   2px   1px   1px   0px
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/frames-dark.png">
-  <img src="docs/frames-light.png" width="818" alt="The eight swim frames laid out side by side, arms opening and closing, the body sitting a pixel or two lower in the middle of the cycle">
+  <img width="818" height="106" src="docs/frames-light.png" alt="The eight swim frames laid out side by side, arms opening and closing, the body sitting a pixel or two lower in the middle of the cycle">
 </picture>
 
 The lift is the part that matters. The whole animal rises as its arms draw in
@@ -274,7 +274,7 @@ stays at 40%.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/variants-dark.gif">
-  <img src="docs/variants-light.gif" width="380" alt="The colour octopus beside the monochrome one, both swimming under the same label, on the page's own background">
+  <img width="380" height="191" src="docs/variants-light.gif" alt="The colour octopus beside the monochrome one, both swimming under the same label, on the page's own background">
 </picture>
 
 The obvious monochrome is one ink with the eyes punched out. It looks correct
