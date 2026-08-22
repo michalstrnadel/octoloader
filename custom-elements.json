@@ -1,0 +1,173 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/element.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<octo-loader>` — the same loader with no framework attached.\n\n```html\n<octo-loader variant=\"mono\" label=\"One moment please…\" size=\"60\"></octo-loader>\n<octo-loader delay=\"1000\" progress=\"0.4\"></octo-loader>\n```",
+          "name": "OctoLoaderElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#root",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#timer",
+              "privacy": "private",
+              "type": {
+                "text": "ReturnType<typeof setTimeout> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#shown",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "'color' | 'mono'"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "speed",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "delay",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "progress",
+              "type": {
+                "text": "number | null"
+              },
+              "description": "`null` while the finish time is unknown."
+            },
+            {
+              "kind": "field",
+              "name": "bubbles",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "panel",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "A quieter second line under the label."
+            },
+            {
+              "kind": "field",
+              "name": "announce",
+              "type": {
+                "text": "string | null"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#render",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "speed"
+            },
+            {
+              "name": "announce"
+            },
+            {
+              "name": "bubbles"
+            },
+            {
+              "name": "progress"
+            },
+            {
+              "name": "delay"
+            },
+            {
+              "name": "panel"
+            },
+            {
+              "name": "description"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "octo-loader",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "OctoLoaderElement",
+          "declaration": {
+            "name": "OctoLoaderElement",
+            "module": "src/element.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "octo-loader",
+          "declaration": {
+            "name": "OctoLoaderElement",
+            "module": "src/element.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

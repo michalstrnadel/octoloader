@@ -3,3 +3,5 @@ dist
 *.tsbuildinfo
 .DS_Store
 scripts/sprite.json
+test-results
+playwright-report

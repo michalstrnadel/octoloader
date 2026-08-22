@@ -86,10 +86,16 @@ Behaviour follows [Primer's loading pattern][primer].
 - 5.2 kB gzipped for the React entry, types included.
 - `toPaths`, `stripPaths`, `diff`, `progressBar` and the layout constants are
   exported, for anyone who wants the sprite without the component.
-- 91 tests that guard the drawing as much as the code: no frame may repeat in a
+- 108 unit tests and 6 browser tests that guard the drawing as much as the code: no frame may repeat in a
   cycle, the arms must sweep out and back, a pose keeps its height, the
   silhouette seals no background pixel, and both palettes hold their tones
   apart. The React entry is exercised in a real document as well as on the
   server, so the delay's timer and its cleanup are covered.
 - ESLint with type-aware rules and Prettier, both enforced in CI across Node
-  20, 22 and 24.
+  20, 22 and 24, plus a Chromium suite that asserts the engine actually accepted
+  the stylesheet — happy-dom parses CSS as text, so a bad keyframe passes every
+  unit test and ships a still octopus.
+- Snapshot tests that render the sprite as characters, so a pull request that
+  moves an eye shows the eye moving in the diff.
+- `custom-elements.json`, generated from the class and its JSDoc and checked in
+  CI, so IDEs can complete and document `<octo-loader>` inside plain HTML.

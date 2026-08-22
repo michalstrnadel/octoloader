@@ -121,7 +121,10 @@ loader.panel = true;
 ```
 
 TypeScript knows the tag, so `document.querySelector('octo-loader')` comes back
-as an `OctoLoaderElement` rather than an `Element`.
+as an `OctoLoaderElement` rather than an `Element`. The package also ships a
+[custom elements manifest](custom-elements.json), generated from the class and
+its JSDoc, so editors offer completion and hover docs for the tag inside plain
+HTML.
 
 ## Loading state
 

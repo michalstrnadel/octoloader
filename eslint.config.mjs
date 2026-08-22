@@ -4,7 +4,16 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'scripts/sprite.json'] },
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'scripts/sprite.json',
+      'custom-elements.json',
+      'test-results/**',
+      'playwright-report/**',
+    ],
+  },
 
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -19,9 +28,9 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        // The build and test configs sit outside tsconfig's `include`, so the
-        // project service needs to be told it may still parse them.
-        projectService: { allowDefaultProject: ['*.config.ts'] },
+        // tsconfig covers src, e2e and the *.config.ts files, so the project
+        // service finds everything it needs on its own.
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -40,11 +49,11 @@ export default tseslint.config(
   // Two entries, not one: spreading the preset alongside a `rules` key would
   // overwrite the very rules it exists to switch off.
   {
-    files: ['scripts/**/*.mjs', 'eslint.config.mjs'],
+    files: ['**/*.mjs'],
     ...tseslint.configs.disableTypeChecked,
   },
   {
-    files: ['scripts/**/*.mjs', 'eslint.config.mjs'],
+    files: ['**/*.mjs'],
     languageOptions: { globals: { console: 'readonly', process: 'readonly' } },
     rules: { 'no-console': 'off' },
   },

@@ -43,6 +43,14 @@ jobs:
 
       - run: npm run build
 
+      # Generated from the class and its JSDoc, so a stale copy in the tree
+      # means the published manifest lies about the element's API.
+      - name: Check the custom elements manifest is current
+        run: |
+          npm run cem
+          git diff --exit-code --stat custom-elements.json \
+            || { echo "::error::custom-elements.json is stale — run npm run cem"; exit 1; }
+
       # The sprite is the product. A regression here is a bigger deal than a
       # few extra bytes, but silent growth is how a 4 kB loader becomes 40.
       - name: Report gzipped size
@@ -50,3 +58,32 @@ jobs:
         run: |
           size=$(cat dist/index.js dist/chunk-*.js | gzip -9 | wc -c)
           echo "React entry: ${size} B gzipped" >> "$GITHUB_STEP_SUMMARY"
+
+  browser:
+    name: browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # Chromium only. These assert what the engine did with the stylesheet,
+      # not how it looks, so a second engine would cost minutes to re-confirm
+      # the same three facts.
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

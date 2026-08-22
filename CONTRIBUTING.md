@@ -9,15 +9,34 @@ browser ESM and touches no Node API.
 ```sh
 npm install
 npm test           # vitest, happy-dom, @testing-library/react
+npm run test:e2e   # playwright, a real browser
 npm run lint       # eslint, type-aware
 npm run format     # prettier
 npm run typecheck
 npm run build      # tsup, ESM + .d.ts
+npm run cem        # regenerate custom-elements.json
 npx serve .        # then open /demo/
 ```
 
-CI runs `lint`, `format:check`, `typecheck`, `test` and `build` on Node 20, 22
-and 24. Running the same five locally is the whole pre-flight.
+CI runs `lint`, `format:check`, `typecheck`, `test`, `build` and the manifest
+check on Node 20, 22 and 24, plus the browser suite once on Chromium. Running
+the same locally is the whole pre-flight.
+
+## Three layers of test, and what each is for
+
+- **Unit** (`npm test`) — the drawing, the geometry, the two entry points. Fast,
+  runs on every save.
+- **Snapshot** (`src/snapshot.test.ts`) — the sprite as characters, the path
+  data, the stylesheet. These exist for the diff: a pull request that moves an
+  eye shows the eye moving, in the review, with no screenshot to fetch. Run
+  `npx vitest -u` to accept a deliberate change, and _look_ at what it accepted.
+- **Browser** (`npm run test:e2e`) — the one question the others cannot answer:
+  did the engine accept the stylesheet? happy-dom parses CSS as text, so a bad
+  keyframe or an unresolvable custom property passes every unit test and ships
+  a still octopus. These ask the browser what it is actually animating.
+
+Deliberately no screenshot comparison. Baselines rendered on macOS do not match
+a Linux runner's, and the drawing is already pinned character by character.
 
 `demo/index.html` imports `dist/element.js` as a module, so it needs a server —
 browsers refuse module imports over `file://`. Run `npm run build` first.
