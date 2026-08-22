@@ -141,8 +141,8 @@ def stack(*parts, bg, gaps):
     return out
 
 
-def framed(content, bg, width, min_height=208, pad_y=48, radius=8):
-    """The `frame` prop: a hairline panel with the loader centred in it.
+def panelled(content, bg, width, min_height=208, pad_y=48, radius=8):
+    """The `panel` prop: a hairline box with the loader centred in it.
 
     The border is one neutral grey at low alpha rather than the page's ink,
     because a single value has to hold on a light ground and a dark one — the
@@ -214,8 +214,9 @@ for name, bg, mp, muted in (('progress-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
                          stack(draw(t, mp, bg, 4, p), say, bg=bg, gaps=[11])], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
-# 4. The panel, which is how a loader marks out the region that is waiting.
-for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK, MUTED_DARK)):
+# 4. The panel — the loader as a whole loading state, the way an empty
+#    state fills the same slot when the wait ends in nothing.
+for name, bg, muted in (('panel-light', LIGHT, MUTED_LIGHT), ('panel-dark', DARK, MUTED_DARK)):
     # 60px sprite, an 18px title and a 14px description — the same scale
     # shadcn's Empty uses, so the panel reads as the slot it stands in for.
     ink = rgb('#24292f') if bg == LIGHT else rgb('#e6edf3')
@@ -224,7 +225,7 @@ for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK
     fs = []
     for n in range(N):
         inner = stack(draw(WARM + n * STEP, COLOR, bg, 2), title, note, bg=bg, gaps=[13, 7])
-        fs.append(strip([framed(inner, bg, 620)], bg, 0, 10))
+        fs.append(strip([panelled(inner, bg, 620)], bg, 0, 10))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
 # 5. Sizes — one still, three scales, so the 30px case is judged at 30px.

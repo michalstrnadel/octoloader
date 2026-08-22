@@ -128,7 +128,7 @@ export class OctoLoaderElement extends HTMLElement {
     'bubbles',
     'progress',
     'delay',
-    'frame',
+    'panel',
     'description',
   ];
 
@@ -197,12 +197,12 @@ export class OctoLoaderElement extends HTMLElement {
     this.setAttribute('bubbles', String(value));
   }
 
-  get frame(): boolean {
-    return this.hasAttribute('frame') && this.getAttribute('frame') !== 'false';
+  get panel(): boolean {
+    return this.hasAttribute('panel') && this.getAttribute('panel') !== 'false';
   }
-  set frame(value: boolean) {
-    if (value) this.setAttribute('frame', '');
-    else this.removeAttribute('frame');
+  set panel(value: boolean) {
+    if (value) this.setAttribute('panel', '');
+    else this.removeAttribute('panel');
   }
 
   /** A quieter second line under the label. */
@@ -250,7 +250,7 @@ export class OctoLoaderElement extends HTMLElement {
 
   #render() {
     // Read through the accessors, so the parsing lives in exactly one place.
-    const { variant, size, speed, label, bubbles, frame, progress, description } = this;
+    const { variant, size, speed, label, bubbles, panel, progress, description } = this;
 
     // aria-labelledby cannot reach across the shadow boundary, so the name is
     // spelled out on the host instead of pointed at the text inside.
@@ -269,18 +269,18 @@ export class OctoLoaderElement extends HTMLElement {
     // The panel spans its container rather than hugging the octopus, because
     // its job is to outline the region the content will land in — a box drawn
     // tight around the animal reads as a badge instead.
-    const panel = frame
+    const box = panel
       ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;' +
-        'min-height:var(--octo-frame-min-height,13rem);' +
-        'padding:var(--octo-frame-padding,3rem);' +
-        'border:1px solid var(--octo-frame,rgba(128,128,128,.2));' +
-        'border-radius:var(--octo-frame-radius,.5rem);'
+        'min-height:var(--octo-panel-min-height,13rem);' +
+        'padding:var(--octo-panel-padding,3rem);' +
+        'border:1px solid var(--octo-panel,rgba(128,128,128,.2));' +
+        'border-radius:var(--octo-panel-radius,.5rem);'
       : '';
 
     const style = document.createElement('style');
     style.textContent =
       ':host{display:inline-flex;flex-direction:column;align-items:center;gap:.75em;' +
-      panel +
+      box +
       `--octo-swim:${0.9 / speed}s;--octo-blink:${4.6 / speed}s;` +
       `--octo-glance:${7.3 / speed}s;--octo-rate:${speed}}` +
       // The label only takes on weight when there is a description under it to

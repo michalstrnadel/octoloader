@@ -42,7 +42,7 @@ Behaviour follows [Primer's loading pattern][primer].
 
 ### In a page
 
-- `frame` — wraps the loader in a panel: a hairline border, a radius, room to
+- `panel` — wraps the loader in a box: a hairline border, a radius, room to
   breathe. Off by default. It spans its container rather than hugging the
   octopus, because the panel's job is to outline the region the content will
   land in; a box drawn tight around the animal reads as a badge instead. It is
@@ -52,8 +52,8 @@ Behaviour follows [Primer's loading pattern][primer].
   into the heading of the pair and wires itself up as `aria-describedby`. It
   gives the panel the title-and-description hierarchy an empty state has;
   without one the label stays a plain caption.
-- Four variables define that panel end to end: `--octo-frame`,
-  `--octo-frame-radius`, `--octo-frame-min-height` and `--octo-frame-padding`.
+- Four variables define that panel end to end: `--octo-panel`,
+  `--octo-panel-radius`, `--octo-panel-min-height` and `--octo-panel-padding`.
   The height is a floor rather than a fixed value, so a panel holding a 30px
   sprite keeps the presence of one holding a 120px sprite.
 

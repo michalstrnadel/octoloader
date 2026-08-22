@@ -49,7 +49,7 @@ import { OctoLoader } from 'octoloader';
 <OctoLoader variant="mono" label="One moment please…" />
 <OctoLoader delay={1000} announce="Loading pull requests" />
 <OctoLoader progress={0.62} label="Uploading…" />
-<OctoLoader frame label="Loading your projects" description="This usually takes a few seconds." />
+<OctoLoader panel label="Loading your projects" description="This usually takes a few seconds." />
 <OctoLoader size={90} speed={1.5} label={null} bubbles={false} />
 ```
 
@@ -62,7 +62,7 @@ import { OctoLoader } from 'octoloader';
 | `delay`                                        | `number`            | `0`                    | Milliseconds to stay invisible. Renders nothing at all until it elapses                                        |
 | `progress`                                     | `number`            | —                      | `0`–`1` turns the loader determinate and draws a bar underneath                                                |
 | `bubbles`                                      | `boolean`           | `true`                 | Bubbles drifting up past the animal's left side. Adds headroom above it                                        |
-| `frame`                                        | `boolean`           | `false`                | Wraps it in a panel that marks out the waiting region. Spans its container; give it a `maxWidth` to hold it in |
+| `panel`                                        | `boolean`           | `false`                | Wraps it in a panel that marks out the waiting region. Spans its container; give it a `maxWidth` to hold it in |
 | `description`                                  | `ReactNode`         | —                      | A quieter second line under the label. Turns the label into the heading of the pair                            |
 | `announce`                                     | `string`            | —                      | Overrides the accessible name. Without it the visible label is the name                                        |
 | `className`, `style`, `id`, `data-*`, handlers |                     |                        | Anything a `div` takes, spread onto the wrapper                                                                |
@@ -100,7 +100,7 @@ the sprite's own 30.
 
 <octo-loader variant="mono" size="60" label="One moment please…"></octo-loader>
 <octo-loader delay="1000" progress="0.4"></octo-loader>
-<octo-loader frame></octo-loader>
+<octo-loader panel></octo-loader>
 ```
 
 The custom element takes the same options as attributes and renders into a
@@ -117,28 +117,30 @@ of state and it lives in the DOM.
 const loader = document.querySelector('octo-loader');
 loader.variant = 'mono';
 loader.progress = done / total; // null for indeterminate
-loader.frame = true;
+loader.panel = true;
 ```
 
 TypeScript knows the tag, so `document.querySelector('octo-loader')` comes back
 as an `OctoLoaderElement` rather than an `Element`.
 
-## Marking out what is waiting
+## Loading state
 
 A loader on its own floats, and floating it says only "something is happening".
-`frame` puts it in a panel — a hairline border, a radius and room to breathe —
+`panel` wraps it in a box — a hairline border, a radius and room to breathe —
 which says _this_ is the part that is waiting, and this is where the content
-will land.
+will land. With a `description` under the label it is a complete loading state,
+the counterpart to the empty state that fills the same slot when the wait ends
+in nothing.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/frame-dark.gif">
-  <img width="640" height="236" src="docs/frame-light.gif" alt="The loader in a bordered panel with Loading your projects under it and a quieter line of explanation below that">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/panel-dark.gif">
+  <img width="640" height="236" src="docs/panel-light.gif" alt="The loader in a bordered panel with Loading your projects under it and a quieter line of explanation below that">
 </picture>
 
 ```jsx
-<OctoLoader frame />
-<OctoLoader frame label="Loading your projects" description="This usually takes a few seconds." />
-<OctoLoader frame style={{ maxWidth: 420 }} />
+<OctoLoader panel />
+<OctoLoader panel label="Loading your projects" description="This usually takes a few seconds." />
+<OctoLoader panel style={{ maxWidth: 420 }} />
 ```
 
 `description` gives the panel the two-line hierarchy an empty state has: the
@@ -168,17 +170,17 @@ reaching for `style` or fighting a specificity war:
 
 | Variable                  | Default                  |                                            |
 | ------------------------- | ------------------------ | ------------------------------------------ |
-| `--octo-frame`            | `rgba(128,128,128,0.28)` | Border colour                              |
-| `--octo-frame-radius`     | `14px`                   | Corner radius                              |
-| `--octo-frame-min-height` | `13rem`                  | Floor, not a fixed height — it still grows |
-| `--octo-frame-padding`    | `3em 2em`                | Any shorthand `padding` takes              |
+| `--octo-panel`            | `rgba(128,128,128,0.28)` | Border colour                              |
+| `--octo-panel-radius`     | `14px`                   | Corner radius                              |
+| `--octo-panel-min-height` | `13rem`                  | Floor, not a fixed height — it still grows |
+| `--octo-panel-padding`    | `3em 2em`                | Any shorthand `padding` takes              |
 
 ```css
 .loader {
-  --octo-frame: var(--color-border);
-  --octo-frame-radius: 0.5rem;
-  --octo-frame-min-height: 9rem;
-  --octo-frame-padding: 1.5rem;
+  --octo-panel: var(--color-border);
+  --octo-panel-radius: 0.5rem;
+  --octo-panel-min-height: 9rem;
+  --octo-panel-padding: 1.5rem;
 }
 ```
 

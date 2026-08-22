@@ -93,10 +93,10 @@ export interface OctoLoaderProps extends Omit<ComponentPropsWithoutRef<'div'>, O
    * the loader marks out which region of the page is waiting. Spans its
    * container; give it a `maxWidth` to hold it in.
    *
-   * Retuned by `--octo-frame`, `--octo-frame-radius`,
-   * `--octo-frame-min-height` and `--octo-frame-padding`.
+   * Retuned by `--octo-panel`, `--octo-panel-radius`,
+   * `--octo-panel-min-height` and `--octo-panel-padding`.
    */
-  frame?: boolean;
+  panel?: boolean;
   /**
    * A quieter second line under the label — what the wait is for, or how long
    * it usually takes. Gives the panel the title-and-description hierarchy an
@@ -126,17 +126,17 @@ const wrapperStyle: CSSProperties = {
  * rather than `currentColor`, so one value holds on a light page and a dark
  * one.
  */
-const frameStyle: CSSProperties = {
+const panelStyle: CSSProperties = {
   display: 'flex',
   width: '100%',
   boxSizing: 'border-box',
   justifyContent: 'center',
   // A floor rather than a fixed height: the panel has to keep its presence
   // when it is only carrying a 30px sprite, and still grow for a long label.
-  minHeight: 'var(--octo-frame-min-height, 13rem)',
-  padding: 'var(--octo-frame-padding, 3rem)',
-  border: '1px solid var(--octo-frame, rgba(128,128,128,0.2))',
-  borderRadius: 'var(--octo-frame-radius, 0.5rem)',
+  minHeight: 'var(--octo-panel-min-height, 13rem)',
+  padding: 'var(--octo-panel-padding, 3rem)',
+  border: '1px solid var(--octo-panel, rgba(128,128,128,0.2))',
+  borderRadius: 'var(--octo-panel-radius, 0.5rem)',
 };
 
 /** With a description under it, the label becomes the heading of the pair. */
@@ -158,7 +158,7 @@ const descriptionStyle: CSSProperties = {
  * ```tsx
  * <OctoLoader delay={1000} announce="Loading pull requests" />
  * <OctoLoader variant="mono" progress={done / total} label={`${done} of ${total}`} />
- * <OctoLoader frame style={{ maxWidth: 420 }} />
+ * <OctoLoader panel style={{ maxWidth: 420 }} />
  * ```
  */
 export const OctoLoader = memo(
@@ -171,7 +171,7 @@ export const OctoLoader = memo(
       delay = 0,
       progress,
       bubbles = true,
-      frame = false,
+      panel = false,
       description,
       announce,
       className,
@@ -235,7 +235,7 @@ export const OctoLoader = memo(
         className={className}
         style={{
           ...wrapperStyle,
-          ...(frame ? frameStyle : null),
+          ...(panel ? panelStyle : null),
           ['--octo-swim' as string]: `${0.9 / speed}s`,
           ['--octo-blink' as string]: `${4.6 / speed}s`,
           ['--octo-glance' as string]: `${7.3 / speed}s`,

@@ -369,21 +369,21 @@ describe('<octo-loader>', () => {
     document.body.innerHTML = '<octo-loader></octo-loader>';
     const el = document.querySelector('octo-loader')!;
     const css = () => el.shadowRoot!.querySelector('style')!.textContent ?? '';
-    expect(css()).not.toContain('--octo-frame');
+    expect(css()).not.toContain('--octo-panel');
 
-    el.setAttribute('frame', '');
+    el.setAttribute('panel', '');
     for (const token of [
-      '--octo-frame,',
-      '--octo-frame-radius,',
-      '--octo-frame-min-height,',
-      '--octo-frame-padding,',
+      '--octo-panel,',
+      '--octo-panel-radius,',
+      '--octo-panel-min-height,',
+      '--octo-panel-padding,',
     ]) {
       expect(css()).toContain(token);
     }
 
     // Spelling it out as false has to win over merely being present.
-    el.setAttribute('frame', 'false');
-    expect(css()).not.toContain('--octo-frame');
+    el.setAttribute('panel', 'false');
+    expect(css()).not.toContain('--octo-panel');
   });
 
   it('answers to properties as well as attributes', () => {
@@ -395,24 +395,24 @@ describe('<octo-loader>', () => {
     expect(el.variant).toBe('color');
     expect(el.size).toBe(60);
     expect(el.progress).toBeNull();
-    expect(el.frame).toBe(false);
+    expect(el.panel).toBe(false);
 
     el.variant = 'mono';
     el.size = 120;
     el.progress = 0.5;
-    el.frame = true;
+    el.panel = true;
 
     expect(el.getAttribute('variant')).toBe('mono');
     expect(el.getAttribute('size')).toBe('120');
     expect(el.getAttribute('progress')).toBe('0.5');
-    expect(el.hasAttribute('frame')).toBe(true);
+    expect(el.hasAttribute('panel')).toBe(true);
     expect(el.shadowRoot!.querySelector('svg')!.getAttribute('width')).toBe('120');
     expect(el.shadowRoot!.querySelector('.octo-bar')).not.toBeNull();
 
     el.progress = null;
-    el.frame = false;
+    el.panel = false;
     expect(el.hasAttribute('progress')).toBe(false);
-    expect(el.hasAttribute('frame')).toBe(false);
+    expect(el.hasAttribute('panel')).toBe(false);
     expect(el.getAttribute('role')).toBe('status');
   });
 
@@ -528,14 +528,14 @@ describe('<OctoLoader>', () => {
     expect(bare).not.toContain('border');
     expect(bare).toContain('display:inline-flex');
 
-    const framed = renderToStaticMarkup(<OctoLoader frame />);
+    const framed = renderToStaticMarkup(<OctoLoader panel />);
     // The panel is a contract: four variables, each with a default. Dropping
     // one turns a documented knob into a value only `style` can reach.
     for (const token of [
-      '--octo-frame,',
-      '--octo-frame-radius,',
-      '--octo-frame-min-height,',
-      '--octo-frame-padding,',
+      '--octo-panel,',
+      '--octo-panel-radius,',
+      '--octo-panel-min-height,',
+      '--octo-panel-padding,',
     ]) {
       expect(framed).toContain(token);
     }
@@ -564,7 +564,7 @@ describe('<OctoLoader>', () => {
 
   it('lets the caller override the panel', () => {
     const html = renderToStaticMarkup(
-      <OctoLoader frame style={{ maxWidth: 320, borderRadius: 20 }} />,
+      <OctoLoader panel style={{ maxWidth: 320, borderRadius: 20 }} />,
     );
     expect(html).toContain('max-width:320px');
     expect(html).toContain('border-radius:20px');
