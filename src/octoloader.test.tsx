@@ -425,6 +425,25 @@ describe('<octo-loader>', () => {
     expect(el.progress).toBe(0);
   });
 
+  it('carries a description on the element too', () => {
+    document.body.innerHTML = '<octo-loader></octo-loader>';
+    const el = document.querySelector('octo-loader')!;
+    expect(el.shadowRoot!.querySelector('.octo-description')).toBeNull();
+    expect(el.shadowRoot!.querySelector('.octo-title')).toBeNull();
+
+    el.description = 'This usually takes a few seconds.';
+    expect(el.getAttribute('description')).toBe('This usually takes a few seconds.');
+    expect(el.shadowRoot!.querySelector('.octo-description')!.textContent).toBe(
+      'This usually takes a few seconds.',
+    );
+    // The label becomes the heading of the pair, and only then.
+    expect(el.shadowRoot!.querySelector('.octo-title')).not.toBeNull();
+
+    el.description = null;
+    expect(el.shadowRoot!.querySelector('.octo-description')).toBeNull();
+    expect(el.shadowRoot!.querySelector('.octo-title')).toBeNull();
+  });
+
   it('speaks the visible text unless it is told otherwise', () => {
     document.body.innerHTML = '<octo-loader></octo-loader>';
     const el = document.querySelector('octo-loader')!;
@@ -525,6 +544,22 @@ describe('<OctoLoader>', () => {
     expect(framed).toContain('box-sizing:border-box');
     expect(framed).toContain('display:flex');
     expect(framed).not.toContain('display:inline-flex');
+  });
+
+  it('gives the label a heading role only when something sits under it', () => {
+    const alone = renderToStaticMarkup(<OctoLoader label="Loading" />);
+    expect(alone).not.toContain('font-weight:500');
+    expect(alone).not.toContain('aria-describedby');
+
+    const paired = renderToStaticMarkup(
+      <OctoLoader label="Loading your projects" description="This usually takes a few seconds." />,
+    );
+    expect(paired).toContain('font-weight:500');
+    expect(paired).toContain('font-size:1.125em');
+    expect(paired).toContain('This usually takes a few seconds.');
+    const described = /aria-describedby="([^"]+)"/.exec(paired)?.[1];
+    expect(described).toBeTruthy();
+    expect(paired).toContain(`id="${described}"`);
   });
 
   it('lets the caller override the panel', () => {

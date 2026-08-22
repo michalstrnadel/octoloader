@@ -98,6 +98,12 @@ export interface OctoLoaderProps extends Omit<ComponentPropsWithoutRef<'div'>, O
    */
   frame?: boolean;
   /**
+   * A quieter second line under the label — what the wait is for, or how long
+   * it usually takes. Gives the panel the title-and-description hierarchy an
+   * empty state has, and makes the label read as the title.
+   */
+  description?: ReactNode;
+  /**
    * Overrides the accessible name. Without it the visible label is the name,
    * and a loader with no label announces as "Loading".
    */
@@ -128,9 +134,21 @@ const frameStyle: CSSProperties = {
   // A floor rather than a fixed height: the panel has to keep its presence
   // when it is only carrying a 30px sprite, and still grow for a long label.
   minHeight: 'var(--octo-frame-min-height, 13rem)',
-  padding: 'var(--octo-frame-padding, 3em 2em)',
-  border: '1px solid var(--octo-frame, rgba(128,128,128,0.28))',
-  borderRadius: 'var(--octo-frame-radius, 14px)',
+  padding: 'var(--octo-frame-padding, 3rem)',
+  border: '1px solid var(--octo-frame, rgba(128,128,128,0.2))',
+  borderRadius: 'var(--octo-frame-radius, 0.5rem)',
+};
+
+/** With a description under it, the label becomes the heading of the pair. */
+const titleStyle: CSSProperties = { fontSize: '1.125em', fontWeight: 500 };
+
+/** Quieter and smaller, the way a description sits under a title. */
+const descriptionStyle: CSSProperties = {
+  fontSize: '0.875em',
+  opacity: 0.72,
+  marginTop: '-0.25em',
+  maxWidth: '32em',
+  textAlign: 'center',
 };
 
 /**
@@ -154,6 +172,7 @@ export const OctoLoader = memo(
       progress,
       bubbles = true,
       frame = false,
+      description,
       announce,
       className,
       style,
@@ -187,8 +206,11 @@ export const OctoLoader = memo(
       return () => clearTimeout(timer);
     }, [delay]);
 
-    const labelId = `${useId()}label`;
+    const uid = useId();
+    const labelId = `${uid}label`;
+    const descriptionId = `${uid}description`;
     const hasLabel = label !== null && label !== undefined && label !== '';
+    const hasDescription = description !== null && description !== undefined && description !== '';
     const determinate = typeof progress === 'number' && Number.isFinite(progress);
     const percent = determinate ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : undefined;
 
@@ -209,6 +231,7 @@ export const OctoLoader = memo(
         // Primer prefers naming the region from the text people can see.
         aria-labelledby={!announce && hasLabel ? labelId : undefined}
         aria-label={announce ?? (hasLabel ? undefined : 'Loading')}
+        aria-describedby={hasDescription ? descriptionId : undefined}
         className={className}
         style={{
           ...wrapperStyle,
@@ -270,8 +293,15 @@ export const OctoLoader = memo(
           ) : null}
         </svg>
         {hasLabel ? (
-          <span id={labelId} aria-hidden="true">
+          // The label only takes on weight when there is a description under
+          // it to be the title of. On its own it stays a plain caption.
+          <span id={labelId} aria-hidden="true" style={hasDescription ? titleStyle : undefined}>
             {label}
+          </span>
+        ) : null}
+        {hasDescription ? (
+          <span id={descriptionId} aria-hidden="true" style={descriptionStyle}>
+            {description}
           </span>
         ) : null}
       </div>

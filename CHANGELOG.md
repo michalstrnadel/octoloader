@@ -48,6 +48,10 @@ Behaviour follows [Primer's loading pattern][primer].
   land in; a box drawn tight around the animal reads as a badge instead. It is
   the same shape an empty state uses, on purpose — the same slot in the page
   should not change size depending on which state it is in.
+- `description` — a quieter second line under the label, which turns the label
+  into the heading of the pair and wires itself up as `aria-describedby`. It
+  gives the panel the title-and-description hierarchy an empty state has;
+  without one the label stays a plain caption.
 - Four variables define that panel end to end: `--octo-frame`,
   `--octo-frame-radius`, `--octo-frame-min-height` and `--octo-frame-padding`.
   The height is a floor rather than a fixed value, so a panel holding a 30px
@@ -79,10 +83,10 @@ Behaviour follows [Primer's loading pattern][primer].
 
 - React component and a framework-free `<octo-loader>` custom element. No
   runtime dependencies; React is an optional peer.
-- 4.8 kB gzipped for the React entry, types included.
+- 5.2 kB gzipped for the React entry, types included.
 - `toPaths`, `stripPaths`, `diff`, `progressBar` and the layout constants are
   exported, for anyone who wants the sprite without the component.
-- 89 tests that guard the drawing as much as the code: no frame may repeat in a
+- 91 tests that guard the drawing as much as the code: no frame may repeat in a
   cycle, the arms must sweep out and back, a pose keeps its height, the
   silhouette seals no background pixel, and both palettes hold their tones
   apart. The React entry is exercised in a real document as well as on the

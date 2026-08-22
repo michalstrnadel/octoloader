@@ -4,7 +4,7 @@
 
 **A pixel-art octopus that swims while you wait.**
 
-[![bundle](https://img.shields.io/badge/gzipped-4.8%20kB-4cc9f0)](#footprint)
+[![bundle](https://img.shields.io/badge/gzipped-5.2%20kB-4cc9f0)](#footprint)
 [![types](https://img.shields.io/badge/types-included-4cc9f0)](#react)
 [![dependencies](https://img.shields.io/badge/dependencies-0-4cc9f0)](package.json)
 [![CI](https://github.com/michalstrnadel/octoloader/actions/workflows/ci.yml/badge.svg)](https://github.com/michalstrnadel/octoloader/actions/workflows/ci.yml)
@@ -49,7 +49,7 @@ import { OctoLoader } from 'octoloader';
 <OctoLoader variant="mono" label="One moment please…" />
 <OctoLoader delay={1000} announce="Loading pull requests" />
 <OctoLoader progress={0.62} label="Uploading…" />
-<OctoLoader frame />
+<OctoLoader frame label="Loading your projects" description="This usually takes a few seconds." />
 <OctoLoader size={90} speed={1.5} label={null} bubbles={false} />
 ```
 
@@ -63,6 +63,7 @@ import { OctoLoader } from 'octoloader';
 | `progress`                                     | `number`            | —                      | `0`–`1` turns the loader determinate and draws a bar underneath                                                |
 | `bubbles`                                      | `boolean`           | `true`                 | Bubbles drifting up past the animal's left side. Adds headroom above it                                        |
 | `frame`                                        | `boolean`           | `false`                | Wraps it in a panel that marks out the waiting region. Spans its container; give it a `maxWidth` to hold it in |
+| `description`                                  | `ReactNode`         | —                      | A quieter second line under the label. Turns the label into the heading of the pair                            |
 | `announce`                                     | `string`            | —                      | Overrides the accessible name. Without it the visible label is the name                                        |
 | `className`, `style`, `id`, `data-*`, handlers |                     |                        | Anything a `div` takes, spread onto the wrapper                                                                |
 
@@ -131,13 +132,20 @@ will land.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/frame-dark.gif">
-  <img width="640" height="228" src="docs/frame-light.gif" alt="The loader centred inside a thin rounded panel that outlines the region of the page still waiting for its content">
+  <img width="640" height="236" src="docs/frame-light.gif" alt="The loader in a bordered panel with Loading your projects under it and a quieter line of explanation below that">
 </picture>
 
 ```jsx
 <OctoLoader frame />
+<OctoLoader frame label="Loading your projects" description="This usually takes a few seconds." />
 <OctoLoader frame style={{ maxWidth: 420 }} />
 ```
+
+`description` gives the panel the two-line hierarchy an empty state has: the
+label takes on the weight and size of a heading, the description sits under it
+smaller and quieter, and it is wired up as `aria-describedby`. Without one the
+label stays a plain caption, so nothing changes for a loader that only needs a
+single line.
 
 That is why the panel spans its container rather than hugging the octopus: it
 is standing in for the content, not decorating the animal. A box drawn tight
@@ -343,8 +351,8 @@ but nothing travels across the screen.
 
 | Entry                | Gzipped |
 | -------------------- | ------- |
-| `octoloader` (React) | 4.8 kB  |
-| `octoloader/element` | 5.2 kB  |
+| `octoloader` (React) | 5.2 kB  |
+| `octoloader/element` | 5.4 kB  |
 
 One stylesheet, however many loaders. It is rendered as a hoisted `<style>`,
 so React 19 lifts it into `<head>` and de-duplicates it across every instance

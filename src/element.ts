@@ -129,6 +129,7 @@ export class OctoLoaderElement extends HTMLElement {
     'progress',
     'delay',
     'frame',
+    'description',
   ];
 
   #root = this.attachShadow({ mode: 'open' });
@@ -204,6 +205,15 @@ export class OctoLoaderElement extends HTMLElement {
     else this.removeAttribute('frame');
   }
 
+  /** A quieter second line under the label. */
+  get description(): string | null {
+    return this.getAttribute('description');
+  }
+  set description(value: string | null) {
+    if (value === null) this.removeAttribute('description');
+    else this.setAttribute('description', value);
+  }
+
   get announce(): string | null {
     return this.getAttribute('announce');
   }
@@ -240,7 +250,7 @@ export class OctoLoaderElement extends HTMLElement {
 
   #render() {
     // Read through the accessors, so the parsing lives in exactly one place.
-    const { variant, size, speed, label, bubbles, frame, progress } = this;
+    const { variant, size, speed, label, bubbles, frame, progress, description } = this;
 
     // aria-labelledby cannot reach across the shadow boundary, so the name is
     // spelled out on the host instead of pointed at the text inside.
@@ -262,9 +272,9 @@ export class OctoLoaderElement extends HTMLElement {
     const panel = frame
       ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;' +
         'min-height:var(--octo-frame-min-height,13rem);' +
-        'padding:var(--octo-frame-padding,3em 2em);' +
-        'border:1px solid var(--octo-frame,rgba(128,128,128,.28));' +
-        'border-radius:var(--octo-frame-radius,14px);'
+        'padding:var(--octo-frame-padding,3rem);' +
+        'border:1px solid var(--octo-frame,rgba(128,128,128,.2));' +
+        'border-radius:var(--octo-frame-radius,.5rem);'
       : '';
 
     const style = document.createElement('style');
@@ -272,15 +282,30 @@ export class OctoLoaderElement extends HTMLElement {
       ':host{display:inline-flex;flex-direction:column;align-items:center;gap:.75em;' +
       panel +
       `--octo-swim:${0.9 / speed}s;--octo-blink:${4.6 / speed}s;` +
-      `--octo-glance:${7.3 / speed}s;--octo-rate:${speed}}${CSS}`;
+      `--octo-glance:${7.3 / speed}s;--octo-rate:${speed}}` +
+      // The label only takes on weight when there is a description under it to
+      // be the title of. On its own it stays a plain caption.
+      '.octo-title{font-size:1.125em;font-weight:500}' +
+      '.octo-description{font-size:.875em;opacity:.72;margin-top:-.25em;' +
+      'max-width:32em;text-align:center}' +
+      CSS;
 
     this.#root.replaceChildren(style, spriteSvg(variant, size, bubbles, progress));
 
     if (label) {
       const text = document.createElement('span');
       text.setAttribute('aria-hidden', 'true');
+      if (description) text.className = 'octo-title';
       text.textContent = label;
       this.#root.append(text);
+    }
+
+    if (description) {
+      const note = document.createElement('span');
+      note.setAttribute('aria-hidden', 'true');
+      note.className = 'octo-description';
+      note.textContent = description;
+      this.#root.append(note);
     }
   }
 }

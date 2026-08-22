@@ -11,6 +11,7 @@ import json, math, os
 from PIL import Image, ImageDraw, ImageFont
 
 FONT = '/System/Library/Fonts/Helvetica.ttc'
+FONT_BOLD = '/System/Library/Fonts/HelveticaNeue.ttc'
 SAY = 'One moment please…'
 MUTED_LIGHT, MUTED_DARK = '#57606a', '#8b949e'
 
@@ -117,9 +118,9 @@ def draw(t, palette, bg, scale, progress=None):
     return img.resize((cw * scale, ch * scale), Image.NEAREST)
 
 
-def caption(text, size, colour, bg):
+def caption(text, size, colour, bg, bold=False):
     """The label under the animal — the other half of the loader."""
-    font = ImageFont.truetype(FONT, size)
+    font = ImageFont.truetype(FONT_BOLD if bold else FONT, size)
     probe = ImageDraw.Draw(Image.new('RGB', (1, 1)))
     box = probe.textbbox((0, 0), text, font=font)
     img = Image.new('RGB', (box[2] - box[0] + 2, box[3] - box[1] + 2), bg)
@@ -127,16 +128,20 @@ def caption(text, size, colour, bg):
     return img
 
 
-def stack(sprite, text, bg, gap):
-    """Sprite over label, centred on each other — the component's own layout."""
-    w = max(sprite.width, text.width)
-    out = Image.new('RGB', (w, sprite.height + gap + text.height), bg)
-    out.paste(sprite, ((w - sprite.width) // 2, 0))
-    out.paste(text, ((w - text.width) // 2, sprite.height + gap))
+def stack(*parts, bg, gaps):
+    """Sprite over label over description, centred — the component's layout."""
+    parts = [p for p in parts if p is not None]
+    w = max(p.width for p in parts)
+    h = sum(p.height for p in parts) + sum(gaps[: len(parts) - 1])
+    out = Image.new('RGB', (w, h), bg)
+    y = 0
+    for i, p in enumerate(parts):
+        out.paste(p, ((w - p.width) // 2, y))
+        y += p.height + (gaps[i] if i < len(gaps) else 0)
     return out
 
 
-def framed(content, bg, width, min_height=208, pad_y=48, radius=14):
+def framed(content, bg, width, min_height=208, pad_y=48, radius=8):
     """The `frame` prop: a hairline panel with the loader centred in it.
 
     The border is one neutral grey at low alpha rather than the page's ink,
@@ -145,7 +150,7 @@ def framed(content, bg, width, min_height=208, pad_y=48, radius=14):
     """
     h = max(min_height, content.height + pad_y * 2)
     out = Image.new('RGB', (width, h), bg)
-    line = blend(bg, (128, 128, 128), 0.28)
+    line = blend(bg, (128, 128, 128), 0.2)
     ImageDraw.Draw(out).rounded_rectangle([0, 0, width - 1, h - 1], radius, outline=line, width=1)
     out.paste(content, ((width - content.width) // 2, (h - content.height) // 2))
     return out
@@ -180,7 +185,7 @@ LIGHT, DARK = rgb('#ffffff'), rgb('#0d1117')
 #    rather than a mascot with a caption bolted on.
 for name, bg, muted in (('hero-light', LIGHT, MUTED_LIGHT), ('hero-dark', DARK, MUTED_DARK)):
     say = caption(SAY, 19, rgb(muted), bg)
-    fs = [strip([stack(draw(WARM + n * STEP, COLOR, bg, 6), say, bg, 14)], bg, 0, 18)
+    fs = [strip([stack(draw(WARM + n * STEP, COLOR, bg, 6), say, bg=bg, gaps=[14])], bg, 0, 18)
           for n in range(N)]
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
@@ -191,8 +196,8 @@ for name, bg, mp, muted in (('variants-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
     fs = []
     for n in range(N):
         t = WARM + n * STEP
-        fs.append(strip([stack(draw(t, COLOR, bg, 4), say, bg, 11),
-                         stack(draw(t, mp, bg, 4), say, bg, 11)], bg, 44, 16))
+        fs.append(strip([stack(draw(t, COLOR, bg, 4), say, bg=bg, gaps=[11]),
+                         stack(draw(t, mp, bg, 4), say, bg=bg, gaps=[11])], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
 # 3. Determinate — the bar walking its 28 positions while the animal swims. The
@@ -205,18 +210,20 @@ for name, bg, mp, muted in (('progress-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
         t = WARM + n * STEP
         p = n / (PN - 1)
         say = caption(f'Uploading… {round(p * 100)}%', 15, rgb(muted), bg)
-        fs.append(strip([stack(draw(t, COLOR, bg, 4, p), say, bg, 11),
-                         stack(draw(t, mp, bg, 4, p), say, bg, 11)], bg, 44, 16))
+        fs.append(strip([stack(draw(t, COLOR, bg, 4, p), say, bg=bg, gaps=[11]),
+                         stack(draw(t, mp, bg, 4, p), say, bg=bg, gaps=[11])], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
 # 4. The panel, which is how a loader marks out the region that is waiting.
 for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK, MUTED_DARK)):
-    # 60px sprite and a 14px label — the component's own defaults, so the
-    # picture shows what `<OctoLoader frame />` actually gives you.
-    say = caption(SAY, 14, rgb(muted), bg)
+    # 60px sprite, an 18px title and a 14px description — the same scale
+    # shadcn's Empty uses, so the panel reads as the slot it stands in for.
+    ink = rgb('#24292f') if bg == LIGHT else rgb('#e6edf3')
+    title = caption('Loading your projects', 18, ink, bg, bold=True)
+    note = caption('This usually takes a few seconds.', 14, rgb(muted), bg)
     fs = []
     for n in range(N):
-        inner = stack(draw(WARM + n * STEP, COLOR, bg, 2), say, bg, 9)
+        inner = stack(draw(WARM + n * STEP, COLOR, bg, 2), title, note, bg=bg, gaps=[13, 7])
         fs.append(strip([framed(inner, bg, 620)], bg, 0, 10))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
