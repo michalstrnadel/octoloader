@@ -136,6 +136,21 @@ def stack(sprite, text, bg, gap):
     return out
 
 
+def framed(content, bg, width, pad_x=40, pad_y=32, radius=6):
+    """The `frame` prop: a hairline panel with the loader centred in it.
+
+    The border is one neutral grey at low alpha rather than the page's ink,
+    because a single value has to hold on a light ground and a dark one — the
+    same reason the component itself does not paint it in `currentColor`.
+    """
+    h = content.height + pad_y * 2
+    out = Image.new('RGB', (width, h), bg)
+    line = blend(bg, (128, 128, 128), 0.28)
+    ImageDraw.Draw(out).rounded_rectangle([0, 0, width - 1, h - 1], radius, outline=line, width=1)
+    out.paste(content, ((width - content.width) // 2, pad_y))
+    return out
+
+
 def strip(images, bg, gap, pad):
     """Lay images out in a row, bottom-aligned, on one ground."""
     w = sum(i.width for i in images) + gap * (len(images) - 1) + pad * 2
@@ -194,13 +209,22 @@ for name, bg, mp, muted in (('progress-light', LIGHT, MONO_LIGHT, MUTED_LIGHT),
                          stack(draw(t, mp, bg, 4, p), say, bg, 11)], bg, 44, 16))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
-# 4. Sizes — one still, three scales, so the 30px case is judged at 30px.
+# 4. The empty-state panel, which is where a loader this size usually lives.
+for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK, MUTED_DARK)):
+    say = caption(SAY, 15, rgb(muted), bg)
+    fs = []
+    for n in range(N):
+        inner = stack(draw(WARM + n * STEP, COLOR, bg, 4), say, bg, 11)
+        fs.append(strip([framed(inner, bg, 440)], bg, 0, 12))
+    print(name, save_gif(f'{OUT}/{name}.gif', fs))
+
+# 5. Sizes — one still, three scales, so the 30px case is judged at 30px.
 for name, bg in (('sizes-light', LIGHT), ('sizes-dark', DARK)):
     imgs = [draw(WARM, COLOR, bg, sc) for sc in (1, 2, 4)]
     strip(imgs, bg, 32, 16).save(f'{OUT}/{name}.png')
     print(name, os.path.getsize(f'{OUT}/{name}.png'))
 
-# 5. The eight frames laid out, which is what the strip really is.
+# 6. The eight frames laid out, which is what the strip really is.
 for name, bg in (('frames-light', LIGHT), ('frames-dark', DARK)):
     imgs = []
     for i in range(len(FRAMES)):

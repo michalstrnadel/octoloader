@@ -70,6 +70,13 @@ export interface OctoLoaderProps {
   /** Bubbles drifting up past the animal's left side. Adds headroom above it. */
   bubbles?: boolean;
   /**
+   * Wrap it in an empty-state panel — a hairline border, a radius and room to
+   * breathe. Spans its container, the way an empty state does; give it a
+   * `maxWidth` to hold it in. Colour and radius are `--octo-frame` and
+   * `--octo-frame-radius`.
+   */
+  frame?: boolean;
+  /**
    * Overrides the accessible name. Without it the visible label is the name,
    * and a loader with no label announces as "Loading".
    */
@@ -85,6 +92,24 @@ const wrapperStyle: CSSProperties = {
   gap: '0.75em',
 };
 
+/**
+ * The panel an empty state sits in.
+ *
+ * It spans its container rather than hugging the octopus, because a box drawn
+ * tight around the content reads as a badge, not as the space where something
+ * is about to appear. A neutral grey at low alpha rather than `currentColor`,
+ * so one value holds on a light page and a dark one.
+ */
+const frameStyle: CSSProperties = {
+  display: 'flex',
+  width: '100%',
+  boxSizing: 'border-box',
+  justifyContent: 'center',
+  padding: '2em 2.5em',
+  border: '1px solid var(--octo-frame, rgba(128,128,128,0.28))',
+  borderRadius: 'var(--octo-frame-radius, 6px)',
+};
+
 export function OctoLoader({
   variant = 'color',
   label = 'One moment please…',
@@ -93,6 +118,7 @@ export function OctoLoader({
   delay = 0,
   progress,
   bubbles = true,
+  frame = false,
   announce,
   className,
   style,
@@ -146,6 +172,7 @@ export function OctoLoader({
       className={className}
       style={{
         ...wrapperStyle,
+        ...(frame ? frameStyle : null),
         ['--octo-swim' as string]: `${0.9 / speed}s`,
         ['--octo-blink' as string]: `${4.6 / speed}s`,
         ['--octo-glance' as string]: `${7.3 / speed}s`,

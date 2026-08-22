@@ -4,7 +4,7 @@
 
 **A pixel-art octopus that swims while you wait.**
 
-[![bundle](https://img.shields.io/badge/gzipped-4.6%20kB-4cc9f0)](#footprint)
+[![bundle](https://img.shields.io/badge/gzipped-4.7%20kB-4cc9f0)](#footprint)
 [![types](https://img.shields.io/badge/types-included-4cc9f0)](#react)
 [![dependencies](https://img.shields.io/badge/dependencies-0-4cc9f0)](package.json)
 [![CI](https://github.com/michalstrnadel/octoloader/actions/workflows/ci.yml/badge.svg)](https://github.com/michalstrnadel/octoloader/actions/workflows/ci.yml)
@@ -49,6 +49,7 @@ import { OctoLoader } from 'octoloader';
 <OctoLoader variant="mono" label="One moment please…" />
 <OctoLoader delay={1000} announce="Loading pull requests" />
 <OctoLoader progress={0.62} label="Uploading…" />
+<OctoLoader frame />
 <OctoLoader size={90} speed={1.5} label={null} bubbles={false} />
 ```
 
@@ -61,6 +62,7 @@ import { OctoLoader } from 'octoloader';
 | `delay` | `number` | `0` | Milliseconds to stay invisible. Renders nothing at all until it elapses |
 | `progress` | `number` | — | `0`–`1` turns the loader determinate and draws a bar underneath |
 | `bubbles` | `boolean` | `true` | Bubbles drifting up past the animal's left side. Adds headroom above it |
+| `frame` | `boolean` | `false` | Wraps it in an empty-state panel. Spans its container; give it a `maxWidth` to hold it in |
 | `announce` | `string` | — | Overrides the accessible name. Without it the visible label is the name |
 | `className`, `style` | | | Applied to the wrapper |
 
@@ -84,12 +86,43 @@ the sprite's own 30.
 
 <octo-loader variant="mono" size="60" label="One moment please…"></octo-loader>
 <octo-loader delay="1000" progress="0.4"></octo-loader>
+<octo-loader frame></octo-loader>
 ```
 
 The custom element takes the same options as attributes and renders into a
 shadow root, so nothing on the page can style it by accident. `progress` is
 whatever `Number()` makes of it; leave the attribute off for the indeterminate
 swim.
+
+## In an empty state
+
+A loader on its own floats. `frame` puts it in the panel an empty state
+usually occupies — a hairline border, a radius and room to breathe.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/frame-dark.gif">
+  <img src="docs/frame-light.gif" width="464" alt="The loader centred inside a thin rounded panel, the way an empty state sits in a page">
+</picture>
+
+```jsx
+<OctoLoader frame />
+<OctoLoader frame style={{ maxWidth: 420 }} />
+```
+
+The panel spans its container rather than hugging the octopus, because a box
+drawn tight around the content reads as a badge instead of as the space
+something is about to appear in. Give it a `maxWidth` when you want it small.
+
+The border is one neutral grey at low alpha rather than `currentColor`, so a
+single value holds on a light page and a dark one — the same reasoning as the
+three-tone face. Two variables move it:
+
+```css
+.loader {
+  --octo-frame: rgba(0, 0, 0, 0.12);
+  --octo-frame-radius: 12px;
+}
+```
 
 ## Matching the wait
 
@@ -253,8 +286,8 @@ but nothing travels across the screen.
 
 | Entry | Gzipped |
 | --- | --- |
-| `octoloader` (React) | 4.6 kB |
-| `octoloader/element` | 4.8 kB |
+| `octoloader` (React) | 4.7 kB |
+| `octoloader/element` | 4.9 kB |
 
 No runtime dependencies. React is an optional peer, so importing
 `octoloader/element` on a page with no React pulls in nothing extra.

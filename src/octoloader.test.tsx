@@ -350,6 +350,21 @@ describe('<octo-loader>', () => {
     expect(el.shadowRoot!.querySelector('.octo-bar')).toBeNull();
   });
 
+  it('takes the panel from the attribute, presence being enough', () => {
+    document.body.innerHTML = '<octo-loader></octo-loader>';
+    const el = document.querySelector('octo-loader')!;
+    const css = () => el.shadowRoot!.querySelector('style')!.textContent ?? '';
+    expect(css()).not.toContain('--octo-frame');
+
+    el.setAttribute('frame', '');
+    expect(css()).toContain('--octo-frame');
+    expect(css()).toContain('border-radius');
+
+    // Spelling it out as false has to win over merely being present.
+    el.setAttribute('frame', 'false');
+    expect(css()).not.toContain('--octo-frame');
+  });
+
   it('speaks the visible text unless it is told otherwise', () => {
     document.body.innerHTML = '<octo-loader></octo-loader>';
     const el = document.querySelector('octo-loader')!;
@@ -427,6 +442,29 @@ describe('<OctoLoader>', () => {
     expect(measured).toContain('aria-valuenow="50"');
     expect(measured).toContain('aria-valuemax="100"');
     expect(measured).toContain('octo-bar');
+  });
+
+  it('draws the empty-state panel only when it is asked for', () => {
+    const bare = renderToStaticMarkup(<OctoLoader />);
+    expect(bare).not.toContain('border');
+    expect(bare).toContain('display:inline-flex');
+
+    const framed = renderToStaticMarkup(<OctoLoader frame />);
+    expect(framed).toContain('--octo-frame');
+    expect(framed).toContain('border-radius');
+    // Spans its container, so it reads as a place rather than a badge.
+    expect(framed).toContain('width:100%');
+    expect(framed).toContain('box-sizing:border-box');
+    expect(framed).toContain('display:flex');
+    expect(framed).not.toContain('display:inline-flex');
+  });
+
+  it('lets the caller override the panel', () => {
+    const html = renderToStaticMarkup(
+      <OctoLoader frame style={{ maxWidth: 320, borderRadius: 20 }} />,
+    );
+    expect(html).toContain('max-width:320px');
+    expect(html).toContain('border-radius:20px');
   });
 
   it('makes room under itself only for a bar that is there', () => {

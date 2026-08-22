@@ -40,6 +40,14 @@ Behaviour follows [Primer's loading pattern][primer].
 
 [primer]: https://primer.style/product/ui-patterns/loading/
 
+### In a page
+
+- `frame` — wraps the loader in the panel an empty state occupies: a hairline
+  border, a radius, room to breathe. Off by default. It spans its container
+  rather than hugging the octopus, because a box drawn tight around the content
+  reads as a badge instead of as the space something is about to appear in.
+  `--octo-frame` and `--octo-frame-radius` move it.
+
 ### The package
 
 - React component and a framework-free `<octo-loader>` custom element. No

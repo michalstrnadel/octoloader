@@ -128,6 +128,7 @@ export class OctoLoaderElement extends HTMLElement {
     'bubbles',
     'progress',
     'delay',
+    'frame',
   ];
 
   #root = this.attachShadow({ mode: 'open' });
@@ -166,6 +167,8 @@ export class OctoLoaderElement extends HTMLElement {
     const speed = Number(this.getAttribute('speed')) || 1;
     const label = this.getAttribute('label') ?? 'One moment please…';
     const bubbles = this.getAttribute('bubbles') !== 'false';
+    // Off unless asked for, so presence turns it on and `frame="false"` does not.
+    const frame = this.hasAttribute('frame') && this.getAttribute('frame') !== 'false';
 
     const raw = this.getAttribute('progress');
     const parsed = raw === null ? Number.NaN : Number(raw);
@@ -185,9 +188,19 @@ export class OctoLoaderElement extends HTMLElement {
       this.setAttribute('aria-valuemax', '100');
     }
 
+    // The empty-state panel spans its container rather than hugging the
+    // octopus — a box drawn tight around the content reads as a badge, not as
+    // the space something is about to appear in.
+    const panel = frame
+      ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;'
+        + 'padding:2em 2.5em;border:1px solid var(--octo-frame,rgba(128,128,128,.28));'
+        + 'border-radius:var(--octo-frame-radius,6px);'
+      : '';
+
     const style = document.createElement('style');
     style.textContent =
       ':host{display:inline-flex;flex-direction:column;align-items:center;gap:.75em;'
+      + panel
       + `--octo-swim:${0.9 / speed}s;--octo-blink:${4.6 / speed}s;`
       + `--octo-glance:${7.3 / speed}s;--octo-rate:${speed}}${CSS}`;
 
