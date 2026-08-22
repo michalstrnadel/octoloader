@@ -136,18 +136,18 @@ def stack(sprite, text, bg, gap):
     return out
 
 
-def framed(content, bg, width, pad_x=32, pad_y=56, radius=12):
+def framed(content, bg, width, min_height=208, pad_y=48, radius=14):
     """The `frame` prop: a hairline panel with the loader centred in it.
 
     The border is one neutral grey at low alpha rather than the page's ink,
     because a single value has to hold on a light ground and a dark one — the
     same reason the component itself does not paint it in `currentColor`.
     """
-    h = content.height + pad_y * 2
+    h = max(min_height, content.height + pad_y * 2)
     out = Image.new('RGB', (width, h), bg)
     line = blend(bg, (128, 128, 128), 0.28)
     ImageDraw.Draw(out).rounded_rectangle([0, 0, width - 1, h - 1], radius, outline=line, width=1)
-    out.paste(content, ((width - content.width) // 2, pad_y))
+    out.paste(content, ((width - content.width) // 2, (h - content.height) // 2))
     return out
 
 
@@ -214,8 +214,8 @@ for name, bg, muted in (('frame-light', LIGHT, MUTED_LIGHT), ('frame-dark', DARK
     say = caption(SAY, 15, rgb(muted), bg)
     fs = []
     for n in range(N):
-        inner = stack(draw(WARM + n * STEP, COLOR, bg, 4), say, bg, 11)
-        fs.append(strip([framed(inner, bg, 440)], bg, 0, 12))
+        inner = stack(draw(WARM + n * STEP, COLOR, bg, 3), say, bg, 10)
+        fs.append(strip([framed(inner, bg, 620)], bg, 0, 10))
     print(name, save_gif(f'{OUT}/{name}.gif', fs))
 
 # 5. Sizes — one still, three scales, so the 30px case is judged at 30px.

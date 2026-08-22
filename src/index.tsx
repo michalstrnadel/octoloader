@@ -91,8 +91,10 @@ export interface OctoLoaderProps extends Omit<ComponentPropsWithoutRef<'div'>, O
   /**
    * Wrap it in a panel — a hairline border, a radius and room to breathe — so
    * the loader marks out which region of the page is waiting. Spans its
-   * container; give it a `maxWidth` to hold it in. Colour and radius are
-   * `--octo-frame` and `--octo-frame-radius`.
+   * container; give it a `maxWidth` to hold it in.
+   *
+   * Retuned by `--octo-frame`, `--octo-frame-radius`,
+   * `--octo-frame-min-height` and `--octo-frame-padding`.
    */
   frame?: boolean;
   /**
@@ -123,9 +125,12 @@ const frameStyle: CSSProperties = {
   width: '100%',
   boxSizing: 'border-box',
   justifyContent: 'center',
-  padding: '3.5em 2em',
+  // A floor rather than a fixed height: the panel has to keep its presence
+  // when it is only carrying a 30px sprite, and still grow for a long label.
+  minHeight: 'var(--octo-frame-min-height, 13rem)',
+  padding: 'var(--octo-frame-padding, 3em 2em)',
   border: '1px solid var(--octo-frame, rgba(128,128,128,0.28))',
-  borderRadius: 'var(--octo-frame-radius, 12px)',
+  borderRadius: 'var(--octo-frame-radius, 14px)',
 };
 
 /**

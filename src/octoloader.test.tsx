@@ -372,8 +372,14 @@ describe('<octo-loader>', () => {
     expect(css()).not.toContain('--octo-frame');
 
     el.setAttribute('frame', '');
-    expect(css()).toContain('--octo-frame');
-    expect(css()).toContain('border-radius');
+    for (const token of [
+      '--octo-frame,',
+      '--octo-frame-radius,',
+      '--octo-frame-min-height,',
+      '--octo-frame-padding,',
+    ]) {
+      expect(css()).toContain(token);
+    }
 
     // Spelling it out as false has to win over merely being present.
     el.setAttribute('frame', 'false');
@@ -504,8 +510,16 @@ describe('<OctoLoader>', () => {
     expect(bare).toContain('display:inline-flex');
 
     const framed = renderToStaticMarkup(<OctoLoader frame />);
-    expect(framed).toContain('--octo-frame');
-    expect(framed).toContain('border-radius');
+    // The panel is a contract: four variables, each with a default. Dropping
+    // one turns a documented knob into a value only `style` can reach.
+    for (const token of [
+      '--octo-frame,',
+      '--octo-frame-radius,',
+      '--octo-frame-min-height,',
+      '--octo-frame-padding,',
+    ]) {
+      expect(framed).toContain(token);
+    }
     // Spans its container, so it outlines a region rather than reading as a badge.
     expect(framed).toContain('width:100%');
     expect(framed).toContain('box-sizing:border-box');

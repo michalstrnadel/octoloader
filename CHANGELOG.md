@@ -45,8 +45,13 @@ Behaviour follows [Primer's loading pattern][primer].
 - `frame` — wraps the loader in a panel: a hairline border, a radius, room to
   breathe. Off by default. It spans its container rather than hugging the
   octopus, because the panel's job is to outline the region the content will
-  land in; a box drawn tight around the animal reads as a badge instead.
-  `--octo-frame` and `--octo-frame-radius` move it.
+  land in; a box drawn tight around the animal reads as a badge instead. It is
+  the same shape an empty state uses, on purpose — the same slot in the page
+  should not change size depending on which state it is in.
+- Four variables define that panel end to end: `--octo-frame`,
+  `--octo-frame-radius`, `--octo-frame-min-height` and `--octo-frame-padding`.
+  The height is a floor rather than a fixed value, so a panel holding a 30px
+  sprite keeps the presence of one holding a 120px sprite.
 
 ### Fitting into a codebase
 

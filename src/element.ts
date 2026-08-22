@@ -261,8 +261,10 @@ export class OctoLoaderElement extends HTMLElement {
     // tight around the animal reads as a badge instead.
     const panel = frame
       ? 'display:flex;width:100%;box-sizing:border-box;justify-content:center;' +
-        'padding:3.5em 2em;border:1px solid var(--octo-frame,rgba(128,128,128,.28));' +
-        'border-radius:var(--octo-frame-radius,12px);'
+        'min-height:var(--octo-frame-min-height,13rem);' +
+        'padding:var(--octo-frame-padding,3em 2em);' +
+        'border:1px solid var(--octo-frame,rgba(128,128,128,.28));' +
+        'border-radius:var(--octo-frame-radius,14px);'
       : '';
 
     const style = document.createElement('style');

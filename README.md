@@ -131,7 +131,7 @@ will land.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/frame-dark.gif">
-  <img src="docs/frame-light.gif" width="464" alt="The loader centred inside a thin rounded panel that outlines the region of the page still waiting for its content">
+  <img src="docs/frame-light.gif" width="640" alt="The loader centred inside a thin rounded panel that outlines the region of the page still waiting for its content">
 </picture>
 
 ```jsx
@@ -155,16 +155,31 @@ So they hand over to each other. If the wait ends in nothing found, swap this
 for a real empty state with a way forward — leaving a loader up is how a page
 ends up looking hung.
 
-The border is one neutral grey at low alpha rather than `currentColor`, so a
-single value holds on a light page and a dark one — the same reasoning as the
-three-tone face. Two variables move it:
+The panel is four tokens, so it can be made to match a design system without
+reaching for `style` or fighting a specificity war:
+
+| Variable                  | Default                  |                                            |
+| ------------------------- | ------------------------ | ------------------------------------------ |
+| `--octo-frame`            | `rgba(128,128,128,0.28)` | Border colour                              |
+| `--octo-frame-radius`     | `14px`                   | Corner radius                              |
+| `--octo-frame-min-height` | `13rem`                  | Floor, not a fixed height — it still grows |
+| `--octo-frame-padding`    | `3em 2em`                | Any shorthand `padding` takes              |
 
 ```css
 .loader {
-  --octo-frame: rgba(0, 0, 0, 0.12);
-  --octo-frame-radius: 12px;
+  --octo-frame: var(--color-border);
+  --octo-frame-radius: 0.5rem;
+  --octo-frame-min-height: 9rem;
+  --octo-frame-padding: 1.5rem;
 }
 ```
+
+Two of those defaults are doing more work than they look. The border is one
+neutral grey at low alpha rather than `currentColor`, so a single value holds
+on a light page and a dark one — the same reasoning as the three-tone face. And
+the height is a floor rather than a fixed value, so a panel holding a 30px
+sprite keeps the same presence as one holding a 120px sprite and a two-line
+label, instead of collapsing to whatever happens to be inside it.
 
 ## Matching the wait
 
