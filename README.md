@@ -4,6 +4,7 @@
 
 **A pixel-art octopus that swims while you wait.**
 
+[![npm](https://img.shields.io/npm/v/octoloader?color=4cc9f0&label=npm)](https://www.npmjs.com/package/octoloader)
 [![bundle](https://img.shields.io/badge/gzipped-5.2%20kB-4cc9f0)](#footprint)
 [![types](https://img.shields.io/badge/types-included-4cc9f0)](#react)
 [![dependencies](https://img.shields.io/badge/dependencies-0-4cc9f0)](package.json)
@@ -34,11 +35,8 @@ three.
 [primer]: https://primer.style/product/ui-patterns/loading/
 
 ```sh
-npm install github:michalstrnadel/octoloader
+npm install octoloader
 ```
-
-Installing from the repository builds `dist` on the way in, so it works
-before the package has a registry entry.
 
 ## React
 

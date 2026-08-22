@@ -51,11 +51,23 @@ jobs:
             exit 1
           fi
 
+      - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
 
-      - run: npm publish
+      # Idempotent on purpose. The first version was published by hand — a new
+      # name cannot have a trusted publisher configured before it exists — so a
+      # tag for it must not fail the run. Re-running a release is then safe too.
+      - name: Publish, unless that version is already out
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "octoloader@$version" version >/dev/null 2>&1; then
+            echo "octoloader@$version is already on the registry — skipping" \
+              >> "$GITHUB_STEP_SUMMARY"
+          else
+            npm publish
+          fi
 
       - name: Cut the GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
